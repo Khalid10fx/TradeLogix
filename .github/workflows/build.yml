@@ -23,6 +23,7 @@ jobs:
         unzip -q *.zip -d app-source
 
     - name: Build Webview APK
-      uses: jaywcjlove/github-action-android-build-apk@main
+      uses: jaywcjlove/android-action@main
       with:
         path: app-source
+        
