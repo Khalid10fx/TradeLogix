@@ -1,0 +1,25 @@
+name: Build APK
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+
+    - name: Unzip project source & Build APK Placeholder
+      run: |
+        mkdir -p app-source
+        unzip -q *.zip -d app-source
+        echo "Source extracted successfully."
+        
