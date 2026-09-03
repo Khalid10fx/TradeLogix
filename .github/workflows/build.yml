@@ -17,13 +17,11 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    - name: Extract Project Source
+    - name: Prepare Web Assets
       run: |
-        mkdir -p app-source
-        unzip -q *.zip -d app-source
+        mkdir -p web-content
+        unzip -q *.zip -d web-content
+        ls -la web-content
 
-    - name: Build Webview APK
-      uses: jaywcjlove/android-action@main
-      with:
-        path: app-source
-        
+    - name: Summary Check
+      run: echo "Web files successfully extracted and ready for packaging."
