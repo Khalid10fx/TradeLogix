@@ -25,3 +25,11 @@ jobs:
 
     - name: Summary Check
       run: echo "Web files successfully extracted and ready for packaging."
+    - name: Summary Check
+      run: echo "Web files successfully extracted and ready for packaging."
+
+    - name: Upload APK Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: TradeLogix-App
+        path: web-content/
