@@ -17,9 +17,12 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    - name: Unzip project source & Build APK Placeholder
+    - name: Extract Project Source
       run: |
         mkdir -p app-source
         unzip -q *.zip -d app-source
-        echo "Source extracted successfully."
-        
+
+    - name: Build Webview APK
+      uses: jaywcjlove/github-action-android-build-apk@main
+      with:
+        path: app-source
