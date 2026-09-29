@@ -1,5 +1,8 @@
 name: Build TradeCycle Apps
 
+permissions:
+  contents: write
+
 on:
   push:
     branches: [ main ]
@@ -92,3 +95,28 @@ jobs:
         with:
           name: TradeCycle-Windows
           path: TradeCycleDesktop\dist\TradeCycle-Setup.exe
+  release:
+    needs: [android, windows]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: TradeCycle-Android
+          path: release-assets
+      - uses: actions/download-artifact@v4
+        with:
+          name: TradeCycle-Windows
+          path: release-assets
+      - name: Rename release files
+        run: |
+          mv release-assets/app-debug.apk release-assets/TradeCycle.apk
+          ls -lh release-assets
+      - name: Publish TradeCycle release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.0.\${{ github.run_number }}
+          name: TradeCycle v1.0.\${{ github.run_number }}
+          generate_release_notes: true
+          files: |
+            release-assets/TradeCycle.apk
+            release-assets/TradeCycle-Setup.exe
