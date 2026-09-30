@@ -18,6 +18,8 @@ jobs:
           rm -rf web-content
           mkdir -p web-content
           unzip -q khalid-journal-app.zip -d web-content
+          find web-content -type f -iname 'TRADECYCLE.html' -delete
+          cp TRADECYCLE.html web-content/TRADECYCLE.html
           find web-content -type f | head -100
       - uses: actions/upload-artifact@v4
         with:
@@ -50,7 +52,7 @@ jobs:
         shell: bash
         run: |
           set -e
-          HTML=$(find web-content -type f \( -iname 'TRADECYCLE.html' -o -iname 'index.html' \) | head -n 1)
+          HTML=web-content/TRADECYCLE.html
           test -n "$HTML"
           mkdir -p android/app/src/main/assets android/app/src/main/java/com/tradecycle/app android/app/src/main/res/values
           cp "$HTML" android/app/src/main/assets/TRADECYCLE.html
@@ -82,7 +84,7 @@ jobs:
       - name: Create Electron project
         shell: pwsh
         run: |
-          $html = Get-ChildItem -Path web-content -Recurse -File | Where-Object { $_.Name -ieq 'TRADECYCLE.html' -or $_.Name -ieq 'index.html' } | Select-Object -First 1
+          $html = Get-Item web-content\TRADECYCLE.html
           if (-not $html) { throw 'No TradeCycle HTML found' }
           New-Item -ItemType Directory -Force -Path TradeCycleDesktop | Out-Null
           Copy-Item $html.FullName TradeCycleDesktop\TRADECYCLE.html -Force
