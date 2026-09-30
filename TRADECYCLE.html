@@ -4508,7 +4508,113 @@ loadCustomLists();
   setTimeout(renderCommand,700);
 })();
 
-// ===== TradeCycle CSV IMPORT ENGINE =====\n(function(){\n  const input=document.getElementById("tcCsvInput");\n  const status=document.getElementById("tcCsvStatus");\n  const mappingBox=document.getElementById("tcCsvMapping");\n  if(!input||!status||!mappingBox)return;\n  let parsedRows=[];\n  let headers=[];\n  let detected={};\n  const aliases={\n    ticket:["ticket","ticket id","deal","deal id","dealid","order","order id","orderid","position","position id","id"],\n    date:["date","time","open time","close time","datetime","timestamp","entry time"],\n    pair:["symbol","pair","instrument","market","asset"],\n    direction:["type","side","direction","action","trade type"],\n    entry:["entry","entry price","open price","open","price open","open price"],\n    stop:["stop","sl","stop loss","stoploss","s/l"],\n    target:["target","tp","take profit","takeprofit","t/p"],\n    exit:["exit","exit price","close price","close","price close"],\n    pnl:["profit","p/l","pnl","p&l","net profit","net p/l","result","profit/loss"],\n    r:["r","r result","r multiple","r-multiple","rr","r:r","risk reward"],\n    outcome:["outcome","result type","status","win/loss","win loss"],\n    session:["session","trading session"], setup:["setup","strategy","model","setup name"],\n    bias:["bias","market bias"], discipline:["discipline","grade","discipline grade"],\n    entryReason:["entry reason","reason for entry","entry notes"], exitReason:["exit reason","reason for exit","exit notes"], notes:["notes","comment","comments","remarks"]\n  };\n  const norm=s=>String(s??"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();\n  function esc(s){return String(s??"").replace(/[&<>\"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]));}\n  function csvParse(text){\n    const rows=[]; let row=[], cell="", quoted=false;\n    for(let i=0;i<text.length;i++){const c=text[i], n=text[i+1];\n      if(quoted){ if(c==='"'&&n==='"'){cell+='"';i++;} else if(c==='"'){quoted=false;} else cell+=c; }\n      else if(c==='"'){quoted=true;}\n      else if(c===','){row.push(cell);cell="";}\n      else if(c===';' && row.length===0 && !text.slice(Math.max(0,i-200),i).includes(',')){row.push(cell);cell="";}\n      else if(c==='\t'){row.push(cell);cell="";}\n      else if(c==='\n'||c==='\r'){if(c==='\r'&&n==='\n')i++;row.push(cell);cell="";if(row.some(v=>String(v).trim()!==""))rows.push(row);row=[];}\n      else cell+=c;\n    }\n    row.push(cell); if(row.some(v=>String(v).trim()!==""))rows.push(row);\n    return rows;\n  }\n  function parseDelimited(text){\n    const sample=text.split(/\r?\n/).slice(0,8).join("\n");\n    const counts=[{d:",",n:(sample.match(/,/g)||[]).length},{d:";",n:(sample.match(/;/g)||[]).length},{d:"\t",n:(sample.match(/\t/g)||[]).length}].sort((a,b)=>b.n-a.n);\n    const delim=counts[0].n?counts[0].d:",";\n    const out=[]; let row=[],cell="",quoted=false;\n    for(let i=0;i<text.length;i++){const c=text[i],n=text[i+1];\n      if(quoted){if(c==='"'&&n==='"'){cell+='"';i++;}else if(c==='"')quoted=false;else cell+=c;}\n      else if(c==='"')quoted=true;\n      else if(c===delim){row.push(cell);cell="";}\n      else if(c==='\n'||c==='\r'){if(c==='\r'&&n==='\n')i++;row.push(cell);cell="";if(row.some(v=>String(v).trim()!==""))out.push(row);row=[];}\n      else cell+=c;\n    }\n    row.push(cell);if(row.some(v=>String(v).trim()!==""))out.push(row);return out;\n  }\n  function detectHeader(rows){\n    let best=0,bestScore=-1;\n    for(let i=0;i<Math.min(rows.length,12);i++){const ns=rows[i].map(norm);let score=0;Object.values(aliases).forEach(arr=>{if(ns.some(h=>arr.includes(h)))score++;});if(score>bestScore){bestScore=score;best=i;}}\n    return best;\n  }\n  function detectMapping(h){\n    const m={}; const nh=h.map(norm);\n    Object.entries(aliases).forEach(([field,als])=>{let idx=nh.findIndex(x=>als.includes(x));if(idx>=0)m[field]=idx;});\n    return m;\n  }\n  function val(row,field,map){const i=map[field];return i==null?"":String(row[i]??"").trim();}\n  function parseDate(v){\n    if(!v)return new Date().toISOString().slice(0,10);\n    let d=new Date(v); if(Number.isNaN(d.getTime())){const m=String(v).match(/(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{2,4})/);if(m)d=new Date(Number(m[3].length===2?"20"+m[3]:m[3]),Number(m[2])-1,Number(m[1]));}\n    return Number.isNaN(d.getTime())?new Date().toISOString().slice(0,10):d.toISOString().slice(0,10);\n  }\n  function direction(v){const x=norm(v);if(/sell|short|out|bear/.test(x))return "Short";return "Long";}\n  function sessionGuess(dateVal){const d=new Date(dateVal);const h=d.getHours();if(h>=0&&h<7)return "Asian KZ";if(h>=7&&h<12)return "London Open";if(h>=12&&h<16)return "NY AM KZ";if(h>=16&&h<18)return "NY Lunch";if(h>=18&&h<22)return "NY PM KZ";return "London Close";}\n  function rCalc(entry,stop,exit,dir){const e=parseFloat(entry),s=parseFloat(stop),x=parseFloat(exit);if(!Number.isFinite(e)||!Number.isFinite(s)||!Number.isFinite(x)||e===s)return null;return ((dir==="Long"?x-e:e-x)/Math.abs(e-s));}\n  function outcomeFromR(r){return r>0?"Win":r<0?"Loss":"BE";}\n  function showMapping(){\n    const fields=["ticket","date","pair","direction","entry","stop","target","exit","pnl","r","outcome","session","setup","bias","discipline","entryReason","exitReason","notes"];\n    mappingBox.style.display="block";mappingBox.innerHTML=`<div style="font-size:11px;font-weight:800;">CSV COLUMN MAPPING</div><div class="tc-csv-note">Auto-detection is shown below. Change any field if your broker uses unusual column names.</div><div class="tc-csv-map">${fields.map(f=>`<label>${f.toUpperCase()}<select data-map-field="${f}"><option value="">— not mapped —</option>${headers.map((h,i)=>`<option value="${i}" ${detected[f]===i?'selected':''}>${esc(h)}</option>`).join("")}</select></label>`).join("")}</div><div class="tc-csv-actions"><button class="btn-primary" id="tcCsvImportBtn" type="button">IMPORT TRADES</button><button class="btn-ghost" id="tcCsvCancelBtn" type="button">Cancel</button></div>`;\n    mappingBox.querySelectorAll("select[data-map-field]").forEach(sel=>sel.addEventListener("change",()=>{detected[sel.dataset.mapField]=sel.value===""?undefined:Number(sel.value);}));\n    document.getElementById("tcCsvCancelBtn").onclick=()=>{mappingBox.style.display="none";};\n    document.getElementById("tcCsvImportBtn").onclick=importRows;\n  }\n  async function importRows(){\n    const existing=new Set(trades.map(t=>String(t.importTicket||t.ticket||"" )).filter(Boolean));let added=0,skipped=0;\n    for(const row of parsedRows){\n      const ticket=val(row,"ticket",detected); if(ticket&&existing.has(ticket)){skipped++;continue;}\n      const pair=val(row,"pair",detected).toUpperCase(); if(!pair){skipped++;continue;}\n      const date=val(row,"date",detected);const d=direction(val(row,"direction",detected));\n      const entry=val(row,"entry",detected),stop=val(row,"stop",detected),exit=val(row,"exit",detected),target=val(row,"target",detected);\n      let r=parseFloat(val(row,"r",detected));if(!Number.isFinite(r))r=rCalc(entry,stop,exit,d);if(!Number.isFinite(r))r=0;\n      let pnl=val(row,"pnl",detected);\n      let outcome=val(row,"outcome",detected);if(!outcome)outcome=outcomeFromR(r);else {const o=norm(outcome);outcome=/loss|lose|lost|negative/.test(o)?"Loss":/be|break even|flat/.test(o)?"BE":"Win";}\n      const ticketId=ticket||`${pair}-${date}-${entry}-${exit}-${pnl}`;\n      const t={id:uid(),importTicket:ticket||ticketId,ticket:ticket||"",date:parseDate(date),pair,direction:d,session:val(row,"session",detected)||sessionGuess(date),bias:val(row,"bias",detected)||"Ranging",setup:val(row,"setup",detected)?val(row,"setup",detected).split(/[,|;]/).map(x=>x.trim()).filter(Boolean):[],checklist:[],entry,stop,target,exit,rResult:r.toFixed(2),pnl,entryReason:val(row,"entryReason",detected),exitReason:val(row,"exitReason",detected),brokerSynced:true,outcome,discipline:val(row,"discipline",detected)||"B",mistakes:"",lessons:"",notes:val(row,"notes",detected),hasImage:false,backtest:false,imported:true,source:"CSV"};\n      trades.push(t);if(ticket)existing.add(ticket);added++;\n    }\n    trades.sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:0);await persist();renderAll();mappingBox.style.display="none";status.innerHTML=`<span style="color:var(--green);font-weight:800;">✓ IMPORT COMPLETE</span> — ${added} trade${added===1?'':'s'} added${skipped?`, ${skipped} skipped/deduped`:''}.`;\n  }\n  input.addEventListener("change",async e=>{\n    const file=e.target.files?.[0];if(!file)return;\n    try{const text=await file.text();const rows=parseDelimited(text);if(rows.length<2)throw new Error("CSV has no data rows.");const hi=detectHeader(rows);headers=rows[hi].map((x,i)=>String(x).trim()||`Column ${i+1}`);parsedRows=rows.slice(hi+1).filter(r=>r.some(v=>String(v).trim()!==""));detected=detectMapping(headers);\n      status.textContent=`Detected ${parsedRows.length} data row${parsedRows.length===1?'':'s'} and ${headers.length} columns. Review the mapping, then import.`;showMapping();\n    }catch(err){status.innerHTML=`<span style="color:var(--red);font-weight:800;">CSV ERROR</span> — ${esc(err.message||String(err))}`;}finally{input.value="";}\n  });\n})();\n
+// ===== TradeCycle CSV IMPORT ENGINE =====
+(function(){
+  const input=document.getElementById("tcCsvInput");
+  const status=document.getElementById("tcCsvStatus");
+  const mappingBox=document.getElementById("tcCsvMapping");
+  if(!input||!status||!mappingBox)return;
+  let parsedRows=[];
+  let headers=[];
+  let detected={};
+  const aliases={
+    ticket:["ticket","ticket id","deal","deal id","dealid","order","order id","orderid","position","position id","id"],
+    date:["date","time","open time","close time","datetime","timestamp","entry time"],
+    pair:["symbol","pair","instrument","market","asset"],
+    direction:["type","side","direction","action","trade type"],
+    entry:["entry","entry price","open price","open","price open","open price"],
+    stop:["stop","sl","stop loss","stoploss","s/l"],
+    target:["target","tp","take profit","takeprofit","t/p"],
+    exit:["exit","exit price","close price","close","price close"],
+    pnl:["profit","p/l","pnl","p&l","net profit","net p/l","result","profit/loss"],
+    r:["r","r result","r multiple","r-multiple","rr","r:r","risk reward"],
+    outcome:["outcome","result type","status","win/loss","win loss"],
+    session:["session","trading session"], setup:["setup","strategy","model","setup name"],
+    bias:["bias","market bias"], discipline:["discipline","grade","discipline grade"],
+    entryReason:["entry reason","reason for entry","entry notes"], exitReason:["exit reason","reason for exit","exit notes"], notes:["notes","comment","comments","remarks"]
+  };
+  const norm=s=>String(s??"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
+  function esc(s){return String(s??"").replace(/[&<>\"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]));}
+  function csvParse(text){
+    const rows=[]; let row=[], cell="", quoted=false;
+    for(let i=0;i<text.length;i++){const c=text[i], n=text[i+1];
+      if(quoted){ if(c==='"'&&n==='"'){cell+='"';i++;} else if(c==='"'){quoted=false;} else cell+=c; }
+      else if(c==='"'){quoted=true;}
+      else if(c===','){row.push(cell);cell="";}
+      else if(c===';' && row.length===0 && !text.slice(Math.max(0,i-200),i).includes(',')){row.push(cell);cell="";}
+      else if(c==='\t'){row.push(cell);cell="";}
+      else if(c==='\n'||c==='\r'){if(c==='\r'&&n==='\n')i++;row.push(cell);cell="";if(row.some(v=>String(v).trim()!==""))rows.push(row);row=[];}
+      else cell+=c;
+    }
+    row.push(cell); if(row.some(v=>String(v).trim()!==""))rows.push(row);
+    return rows;
+  }
+  function parseDelimited(text){
+    const sample=text.split(/\r?
+/).slice(0,8).join("\n");
+    const counts=[{d:",",n:(sample.match(/,/g)||[]).length},{d:";",n:(sample.match(/;/g)||[]).length},{d:"\t",n:(sample.match(/\t/g)||[]).length}].sort((a,b)=>b.n-a.n);
+    const delim=counts[0].n?counts[0].d:",";
+    const out=[]; let row=[],cell="",quoted=false;
+    for(let i=0;i<text.length;i++){const c=text[i],n=text[i+1];
+      if(quoted){if(c==='"'&&n==='"'){cell+='"';i++;}else if(c==='"')quoted=false;else cell+=c;}
+      else if(c==='"')quoted=true;
+      else if(c===delim){row.push(cell);cell="";}
+      else if(c==='\n'||c==='\r'){if(c==='\r'&&n==='\n')i++;row.push(cell);cell="";if(row.some(v=>String(v).trim()!==""))out.push(row);row=[];}
+      else cell+=c;
+    }
+    row.push(cell);if(row.some(v=>String(v).trim()!==""))out.push(row);return out;
+  }
+  function detectHeader(rows){
+    let best=0,bestScore=-1;
+    for(let i=0;i<Math.min(rows.length,12);i++){const ns=rows[i].map(norm);let score=0;Object.values(aliases).forEach(arr=>{if(ns.some(h=>arr.includes(h)))score++;});if(score>bestScore){bestScore=score;best=i;}}
+    return best;
+  }
+  function detectMapping(h){
+    const m={}; const nh=h.map(norm);
+    Object.entries(aliases).forEach(([field,als])=>{let idx=nh.findIndex(x=>als.includes(x));if(idx>=0)m[field]=idx;});
+    return m;
+  }
+  function val(row,field,map){const i=map[field];return i==null?"":String(row[i]??"").trim();}
+  function parseDate(v){
+    if(!v)return new Date().toISOString().slice(0,10);
+    let d=new Date(v); if(Number.isNaN(d.getTime())){const m=String(v).match(/(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{2,4})/);if(m)d=new Date(Number(m[3].length===2?"20"+m[3]:m[3]),Number(m[2])-1,Number(m[1]));}
+    return Number.isNaN(d.getTime())?new Date().toISOString().slice(0,10):d.toISOString().slice(0,10);
+  }
+  function direction(v){const x=norm(v);if(/sell|short|out|bear/.test(x))return "Short";return "Long";}
+  function sessionGuess(dateVal){const d=new Date(dateVal);const h=d.getHours();if(h>=0&&h<7)return "Asian KZ";if(h>=7&&h<12)return "London Open";if(h>=12&&h<16)return "NY AM KZ";if(h>=16&&h<18)return "NY Lunch";if(h>=18&&h<22)return "NY PM KZ";return "London Close";}
+  function rCalc(entry,stop,exit,dir){const e=parseFloat(entry),s=parseFloat(stop),x=parseFloat(exit);if(!Number.isFinite(e)||!Number.isFinite(s)||!Number.isFinite(x)||e===s)return null;return ((dir==="Long"?x-e:e-x)/Math.abs(e-s));}
+  function outcomeFromR(r){return r>0?"Win":r<0?"Loss":"BE";}
+  function showMapping(){
+    const fields=["ticket","date","pair","direction","entry","stop","target","exit","pnl","r","outcome","session","setup","bias","discipline","entryReason","exitReason","notes"];
+    mappingBox.style.display="block";mappingBox.innerHTML=`<div style="font-size:11px;font-weight:800;">CSV COLUMN MAPPING</div><div class="tc-csv-note">Auto-detection is shown below. Change any field if your broker uses unusual column names.</div><div class="tc-csv-map">${fields.map(f=>`<label>${f.toUpperCase()}<select data-map-field="${f}"><option value="">— not mapped —</option>${headers.map((h,i)=>`<option value="${i}" ${detected[f]===i?'selected':''}>${esc(h)}</option>`).join("")}</select></label>`).join("")}</div><div class="tc-csv-actions"><button class="btn-primary" id="tcCsvImportBtn" type="button">IMPORT TRADES</button><button class="btn-ghost" id="tcCsvCancelBtn" type="button">Cancel</button></div>`;
+    mappingBox.querySelectorAll("select[data-map-field]").forEach(sel=>sel.addEventListener("change",()=>{detected[sel.dataset.mapField]=sel.value===""?undefined:Number(sel.value);}));
+    document.getElementById("tcCsvCancelBtn").onclick=()=>{mappingBox.style.display="none";};
+    document.getElementById("tcCsvImportBtn").onclick=importRows;
+  }
+  async function importRows(){
+    const existing=new Set(trades.map(t=>String(t.importTicket||t.ticket||"" )).filter(Boolean));let added=0,skipped=0;
+    for(const row of parsedRows){
+      const ticket=val(row,"ticket",detected); if(ticket&&existing.has(ticket)){skipped++;continue;}
+      const pair=val(row,"pair",detected).toUpperCase(); if(!pair){skipped++;continue;}
+      const date=val(row,"date",detected);const d=direction(val(row,"direction",detected));
+      const entry=val(row,"entry",detected),stop=val(row,"stop",detected),exit=val(row,"exit",detected),target=val(row,"target",detected);
+      let r=parseFloat(val(row,"r",detected));if(!Number.isFinite(r))r=rCalc(entry,stop,exit,d);if(!Number.isFinite(r))r=0;
+      let pnl=val(row,"pnl",detected);
+      let outcome=val(row,"outcome",detected);if(!outcome)outcome=outcomeFromR(r);else {const o=norm(outcome);outcome=/loss|lose|lost|negative/.test(o)?"Loss":/be|break even|flat/.test(o)?"BE":"Win";}
+      const ticketId=ticket||`${pair}-${date}-${entry}-${exit}-${pnl}`;
+      const t={id:uid(),importTicket:ticket||ticketId,ticket:ticket||"",date:parseDate(date),pair,direction:d,session:val(row,"session",detected)||sessionGuess(date),bias:val(row,"bias",detected)||"Ranging",setup:val(row,"setup",detected)?val(row,"setup",detected).split(/[,|;]/).map(x=>x.trim()).filter(Boolean):[],checklist:[],entry,stop,target,exit,rResult:r.toFixed(2),pnl,entryReason:val(row,"entryReason",detected),exitReason:val(row,"exitReason",detected),brokerSynced:true,outcome,discipline:val(row,"discipline",detected)||"B",mistakes:"",lessons:"",notes:val(row,"notes",detected),hasImage:false,backtest:false,imported:true,source:"CSV"};
+      trades.push(t);if(ticket)existing.add(ticket);added++;
+    }
+    trades.sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:0);await persist();renderAll();mappingBox.style.display="none";status.innerHTML=`<span style="color:var(--green);font-weight:800;">✓ IMPORT COMPLETE</span> — ${added} trade${added===1?'':'s'} added${skipped?`, ${skipped} skipped/deduped`:''}.`;
+  }
+  input.addEventListener("change",async e=>{
+    const file=e.target.files?.[0];if(!file)return;
+    try{const text=await file.text();const rows=parseDelimited(text);if(rows.length<2)throw new Error("CSV has no data rows.");const hi=detectHeader(rows);headers=rows[hi].map((x,i)=>String(x).trim()||`Column ${i+1}`);parsedRows=rows.slice(hi+1).filter(r=>r.some(v=>String(v).trim()!==""));detected=detectMapping(headers);
+      status.textContent=`Detected ${parsedRows.length} data row${parsedRows.length===1?'':'s'} and ${headers.length} columns. Review the mapping, then import.`;showMapping();
+    }catch(err){status.innerHTML=`<span style="color:var(--red);font-weight:800;">CSV ERROR</span> — ${esc(err.message||String(err))}`;}finally{input.value="";}
+  });
+})();
+
 </script>
 <div id="adBannerContainer" class="hidden">
   <div class="ad-label">ADVERTISEMENT</div>
