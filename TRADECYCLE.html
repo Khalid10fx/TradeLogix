@@ -1475,6 +1475,7 @@ const DISCIPLINE = ["A","B","C","D","F"];
 const STORAGE_KEY = "ict-journal-trades-v1";
 const BACKUP_KEY = "ict-journal-backup-v1";
 const IMG_PREFIX = "ict-journal-img-";
+const WEB3FORMS_KEY = "YOUR_WEB3FORMS_ACCESS_KEY_HERE";
 
 // --- Storage layer ---
 // window.storage (Claude's cloud save) only exists when this runs inside Claude's own
@@ -4247,9 +4248,10 @@ function openBrokerConnect(broker){
           <div style="font-size:10px;color:var(--faint);letter-spacing:.1em;margin-bottom:6px;">USE THIS NOW</div>
           <div style="font-size:12px;color:var(--text);line-height:1.6;">📥 <b>Import Broker CSV</b> — works offline and supports MT4, MT5, cTrader and prop-firm exports.</div>
         </div>
-        <button class="btn-primary" type="button" onclick="document.getElementById('brokerConnectModal').classList.remove('open')" style="margin:0 auto;justify-content:center;">CLOSE</button>
+        <button class="btn-primary" type="button" id="brokerConnectCloseDynamic" style="margin:0 auto;justify-content:center;">CLOSE</button>
       </div>`;
     document.getElementById("brokerConnectModal")?.classList.add("open");
+    document.getElementById("brokerConnectCloseDynamic")?.addEventListener("click",()=>document.getElementById("brokerConnectModal")?.classList.remove("open"));
   });
 }
 document.querySelectorAll(".broker-cat").forEach(tab=>tab.addEventListener("click",()=>{
@@ -4550,8 +4552,7 @@ loadCustomLists();
     return rows;
   }
   function parseDelimited(text){
-    const sample=text.split(/\r?
-/).slice(0,8).join("\n");
+    const sample=text.split(/\r?\n/).slice(0,8).join("\n");
     const counts=[{d:",",n:(sample.match(/,/g)||[]).length},{d:";",n:(sample.match(/;/g)||[]).length},{d:"\t",n:(sample.match(/\t/g)||[]).length}].sort((a,b)=>b.n-a.n);
     const delim=counts[0].n?counts[0].d:",";
     const out=[]; let row=[],cell="",quoted=false;
