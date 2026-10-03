@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   package:
@@ -39,41 +39,64 @@ jobs:
           gh release download v1.1.1 --repo "${{ github.repository }}" --pattern "TradeCycle-Setup.exe" --dir NT_FIXED/downloads --clobber
           test -s NT_FIXED/downloads/TradeCycle.apk
           test -s NT_FIXED/downloads/TradeCycle-Setup.exe
+          echo "APK:"
           sha256sum NT_FIXED/downloads/TradeCycle.apk
+          echo "Windows:"
           sha256sum NT_FIXED/downloads/TradeCycle-Setup.exe
 
-      - name: Verify package structure and web links
+      - name: Verify HTML JavaScript
         shell: bash
         run: |
           set -euo pipefail
-          test -f NT_FIXED/index.html
-          test -f NT_FIXED/manifest.webmanifest
-          test -f NT_FIXED/netlify.toml
-          test -f NT_FIXED/privacy.html
-          test -f NT_FIXED/README.md
-          test -f NT_FIXED/sw.js
-          test -f NT_FIXED/terms.html
-          test -f NT_FIXED/assets/icon.svg
-          test -f NT_FIXED/desktop/TradeCycle-Web.html
-          test -f NT_FIXED/downloads/TradeCycle.apk
-          test -f NT_FIXED/downloads/TradeCycle-Setup.exe
+          node <<'NODE'
+          const fs=require('fs');
+          const html=fs.readFileSync('NT_FIXED/desktop/TradeCycle-Web.html','utf8');
+          const scripts=[...html.matchAll(/<script(?:[^>]*)>([\\s\\S]*?)<\\/script>/gi)].map(m=>m[1]).filter(s=>s.trim());
+          if(!scripts.length) throw new Error('No JavaScript blocks found');
+          scripts.forEach((src,i)=>{ try { new Function(src); } catch(e) { console.error('SCRIPT '+(i+1)+' FAILED'); console.error(e.message); process.exit(1); } });
+          if(html.includes('\\\\n const ')) throw new Error('Literal \\n JavaScript corruption detected');
+          if(!html.includes('buymeacoffee.com/yayazheyv')) throw new Error('Buy Me a Coffee link missing');
+          console.log('Validated '+scripts.length+' JavaScript blocks');
+          NODE
+
+      - name: Verify package structure and links
+        shell: bash
+        run: |
+          set -euo pipefail
+          for f in index.html manifest.webmanifest netlify.toml privacy.html README.md sw.js terms.html assets/icon.svg desktop/TradeCycle-Web.html downloads/TradeCycle.apk downloads/TradeCycle-Setup.exe; do
+            test -f "NT_FIXED/$f" || { echo "Missing: $f"; exit 1; }
+          done
           grep -q 'desktop/TradeCycle-Web.html' NT_FIXED/index.html
           grep -q 'downloads/TradeCycle.apk' NT_FIXED/index.html
           grep -q 'downloads/TradeCycle-Setup.exe' NT_FIXED/index.html
-          grep -q 'buymeacoffee.com/yayazheyv' NT_FIXED/desktop/TradeCycle-Web.html
-          ! grep -qF '\\n' NT_FIXED/desktop/TradeCycle-Web.html || true
+          unzip -t NT_FIXED/downloads/TradeCycle.apk >/dev/null
+          file NT_FIXED/downloads/TradeCycle-Setup.exe | grep -qi 'PE32\|MS-DOS'
+          echo "Structure verified:"
           find NT_FIXED -maxdepth 2 -type f -print | sort
 
-      - name: Create ZIP
+      - name: Create ZIP and verify it
         shell: bash
         run: |
           set -euo pipefail
-          cd NT_FIXED/..
+          rm -f TradeCycle_NT_FIXED.zip
           zip -qr TradeCycle_NT_FIXED.zip NT_FIXED
+          unzip -t TradeCycle_NT_FIXED.zip >/dev/null
+          echo "ZIP SHA256:"
           sha256sum TradeCycle_NT_FIXED.zip
+          echo "ZIP size:"
+          ls -lh TradeCycle_NT_FIXED.zip
 
       - uses: actions/upload-artifact@v4
         with:
           name: TradeCycle_NT_FIXED
           path: TradeCycle_NT_FIXED.zip
           retention-days: 30
+
+      - name: Publish direct download release asset
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: nt-fixed-latest
+          name: TradeCycle NT_FIXED
+          target_commitish: ${{ github.sha }}
+          body: "Verified NT_FIXED distribution. The ZIP contains the requested root index.html launcher and Android/Windows/Web builds."
+          files: TradeCycle_NT_FIXED.zip
