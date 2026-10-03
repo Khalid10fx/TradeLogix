@@ -51,7 +51,7 @@ jobs:
           node <<'NODE'
           const fs=require('fs');
           const html=fs.readFileSync('NT_FIXED/desktop/TradeCycle-Web.html','utf8');
-          const scripts=[...html.matchAll(/<script(?:[^>]*)>([\\s\\S]*?)<\\/script>/gi)].map(m=>m[1]).filter(s=>s.trim());
+          const scripts=[]; const re=/<script(?:[^>]*)>([\\s\\S]*?)<\\/script>/gi; let m; while((m=re.exec(html))!==null) scripts.push(m[1]);
           if(!scripts.length) throw new Error('No JavaScript blocks found');
           scripts.forEach((src,i)=>{ try { new Function(src); } catch(e) { console.error('SCRIPT '+(i+1)+' FAILED'); console.error(e.message); process.exit(1); } });
           if(html.includes('\\\\n const ')) throw new Error('Literal \\n JavaScript corruption detected');
