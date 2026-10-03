@@ -63,14 +63,14 @@ jobs:
           cp "$HTML" android/app/src/main/assets/TRADECYCLE.html
           cat > android/tradecycle-logo.svg <<'SVG'
           <svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
-  <rect width="1024" height="1024" rx="230" fill="#07111F"/>
-  <circle cx="512" cy="512" r="438" fill="#0B1628"/>
-  <circle cx="512" cy="512" r="402" fill="none" stroke="#162A44" stroke-width="18"/>
-  <path d="M255 352H520" stroke="#38BDF8" stroke-width="72" stroke-linecap="round"/>
-  <path d="M387 352V690" stroke="#38BDF8" stroke-width="72" stroke-linecap="round"/>
-  <path d="M585 380C535 420 510 470 510 530C510 625 575 690 675 690C725 690 765 674 800 644" fill="none" stroke="#A78BFA" stroke-width="72" stroke-linecap="round"/>
-  <path d="M654 318L790 318L790 454" fill="none" stroke="#FBBF24" stroke-width="52" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M650 455L790 318" stroke="#FBBF24" stroke-width="52" stroke-linecap="round"/>
+          <rect width="1024" height="1024" rx="230" fill="#07111F"/>
+          <circle cx="512" cy="512" r="438" fill="#0B1628"/>
+          <circle cx="512" cy="512" r="402" fill="none" stroke="#162A44" stroke-width="18"/>
+          <path d="M255 352H520" stroke="#38BDF8" stroke-width="72" stroke-linecap="round"/>
+          <path d="M387 352V690" stroke="#38BDF8" stroke-width="72" stroke-linecap="round"/>
+          <path d="M585 380C535 420 510 470 510 530C510 625 575 690 675 690C725 690 765 674 800 644" fill="none" stroke="#A78BFA" stroke-width="72" stroke-linecap="round"/>
+          <path d="M654 318L790 318L790 454" fill="none" stroke="#FBBF24" stroke-width="52" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M650 455L790 318" stroke="#FBBF24" stroke-width="52" stroke-linecap="round"/>
           </svg>
           SVG
           convert -background none android/tradecycle-logo.svg android/app/src/main/res/drawable-nodpi/tradecycle_logo.png
