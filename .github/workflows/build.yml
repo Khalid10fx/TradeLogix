@@ -71,7 +71,7 @@ jobs:
   <path d="M585 380C535 420 510 470 510 530C510 625 575 690 675 690C725 690 765 674 800 644" fill="none" stroke="#A78BFA" stroke-width="72" stroke-linecap="round"/>
   <path d="M654 318L790 318L790 454" fill="none" stroke="#FBBF24" stroke-width="52" stroke-linecap="round" stroke-linejoin="round"/>
   <path d="M650 455L790 318" stroke="#FBBF24" stroke-width="52" stroke-linecap="round"/>
-</svg>
+          </svg>
           SVG
           convert -background none android/tradecycle-logo.svg android/app/src/main/res/drawable-nodpi/tradecycle_logo.png
           convert android/app/src/main/res/drawable-nodpi/tradecycle_logo.png -resize 48x48 android/app/src/main/res/mipmap-mdpi/ic_launcher.png
