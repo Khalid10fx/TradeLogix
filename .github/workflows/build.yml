@@ -71,12 +71,12 @@ jobs:
             <path d="M185 790h650" stroke="#2C3444" stroke-width="36" stroke-linecap="round"/>
           </svg>
           SVG
-          magick -background none android/tradecycle-logo.svg android/app/src/main/res/drawable-nodpi/tradecycle_logo.png
-          magick android/app/src/main/res/drawable-nodpi/tradecycle_logo.png -resize 48x48 android/app/src/main/res/mipmap-mdpi/ic_launcher.png
-          magick android/app/src/main/res/drawable-nodpi/tradecycle_logo.png -resize 72x72 android/app/src/main/res/mipmap-hdpi/ic_launcher.png
-          magick android/app/src/main/res/drawable-nodpi/tradecycle_logo.png -resize 96x96 android/app/src/main/res/mipmap-xhdpi/ic_launcher.png
-          magick android/app/src/main/res/drawable-nodpi/tradecycle_logo.png -resize 144x144 android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png
-          magick android/app/src/main/res/drawable-nodpi/tradecycle_logo.png -resize 192x192 android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
+          convert -background none android/tradecycle-logo.svg android/app/src/main/res/drawable-nodpi/tradecycle_logo.png
+          convert android/app/src/main/res/drawable-nodpi/tradecycle_logo.png -resize 48x48 android/app/src/main/res/mipmap-mdpi/ic_launcher.png
+          convert android/app/src/main/res/drawable-nodpi/tradecycle_logo.png -resize 72x72 android/app/src/main/res/mipmap-hdpi/ic_launcher.png
+          convert android/app/src/main/res/drawable-nodpi/tradecycle_logo.png -resize 96x96 android/app/src/main/res/mipmap-xhdpi/ic_launcher.png
+          convert android/app/src/main/res/drawable-nodpi/tradecycle_logo.png -resize 144x144 android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png
+          convert android/app/src/main/res/drawable-nodpi/tradecycle_logo.png -resize 192x192 android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
           cp android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png android/app/src/main/res/drawable-nodpi/ic_launcher_foreground.png
           cat > android/app/src/main/res/values/colors.xml <<'XML'
           <resources><color name="tradecycle_icon_bg">#0A0C10</color></resources>
