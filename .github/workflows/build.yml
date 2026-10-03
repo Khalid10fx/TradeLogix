@@ -55,13 +55,76 @@ jobs:
           HTML=web-content/TRADECYCLE.html
           test -n "$HTML"
           mkdir -p android/app/src/main/assets android/app/src/main/java/com/tradecycle/app android/app/src/main/res/values
+          mkdir -p android/app/src/main/res/drawable-nodpi
+          mkdir -p android/app/src/main/res/mipmap-mdpi android/app/src/main/res/mipmap-hdpi android/app/src/main/res/mipmap-xhdpi android/app/src/main/res/mipmap-xxhdpi android/app/src/main/res/mipmap-xxxhdpi
+          mkdir -p android/app/src/main/res/mipmap-anydpi-v26
           cp "$HTML" android/app/src/main/assets/TRADECYCLE.html
+          cat > android/tradecycle-logo.svg <<'SVG'
+          <svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+            <defs><linearGradient id="g" x1="120" y1="900" x2="900" y2="120" gradientUnits="userSpaceOnUse"><stop stop-color="#38bdf8"/><stop offset="1" stop-color="#a78bfa"/></linearGradient></defs>
+            <rect width="1024" height="1024" rx="220" fill="#0A0C10"/>
+            <rect x="32" y="32" width="960" height="960" rx="190" fill="none" stroke="url(#g)" stroke-width="46"/>
+            <path d="M230 690V470M230 470l120-120 125 125 145-220 145 120" fill="none" stroke="url(#g)" stroke-width="70" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M680 275h155v155" fill="none" stroke="#fbbf24" stroke-width="62" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M185 790h650" stroke="#2C3444" stroke-width="36" stroke-linecap="round"/>
+          </svg>
+          SVG
+          convert -background none android/tradecycle-logo.svg android/app/src/main/res/drawable-nodpi/tradecycle_logo.png
+          convert android/app/src/main/res/drawable-nodpi/tradecycle_logo.png -resize 48x48 android/app/src/main/res/mipmap-mdpi/ic_launcher.png
+          convert android/app/src/main/res/drawable-nodpi/tradecycle_logo.png -resize 72x72 android/app/src/main/res/mipmap-hdpi/ic_launcher.png
+          convert android/app/src/main/res/drawable-nodpi/tradecycle_logo.png -resize 96x96 android/app/src/main/res/mipmap-xhdpi/ic_launcher.png
+          convert android/app/src/main/res/drawable-nodpi/tradecycle_logo.png -resize 144x144 android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png
+          convert android/app/src/main/res/drawable-nodpi/tradecycle_logo.png -resize 192x192 android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
+          cp android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png android/app/src/main/res/drawable-nodpi/ic_launcher_foreground.png
+          cat > android/app/src/main/res/values/colors.xml <<'XML'
+          <resources><color name="tradecycle_icon_bg">#0A0C10</color></resources>
+          XML
+          cat > android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml <<'XML'
+          <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+            <background android:drawable="@color/tradecycle_icon_bg" />
+            <foreground android:drawable="@drawable/ic_launcher_foreground" />
+          </adaptive-icon>
+          XML
           printf '%s\n' "pluginManagement { repositories { google(); mavenCentral(); gradlePluginPortal() } }" "dependencyResolutionManagement { repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS); repositories { google(); mavenCentral() } }" "rootProject.name='TradeCycleAndroid'" "include ':app'" > android/settings.gradle
           printf '%s\n' "plugins { id 'com.android.application' version '8.7.3' apply false }" > android/build.gradle
-          printf '%s\n' "plugins { id 'com.android.application' }" "android { namespace 'com.tradecycle.app'; compileSdk 35; defaultConfig { applicationId 'com.tradecycle.app'; minSdk 23; targetSdk 35; versionCode 1; versionName '1.0' } }" > android/app/build.gradle
-          printf '%s\n' '<manifest xmlns:android="http://schemas.android.com/apk/res/android"><uses-permission android:name="android.permission.INTERNET"/><application android:theme="@style/AppTheme" android:label="TradeCycle" android:usesCleartextTraffic="true"><activity android:name=".MainActivity" android:exported="true"><intent-filter><action android:name="android.intent.action.MAIN"/><category android:name="android.intent.category.LAUNCHER"/></intent-filter></activity></application></manifest>' > android/app/src/main/AndroidManifest.xml
+          printf '%s\n' "plugins { id 'com.android.application' }" "android { namespace 'com.tradecycle.app'; compileSdk 35; defaultConfig { applicationId 'com.tradecycle.app'; minSdk 23; targetSdk 35; versionCode 2; versionName '1.1' } }" > android/app/build.gradle
+          printf '%s\n' '<manifest xmlns:android="http://schemas.android.com/apk/res/android"><uses-permission android:name="android.permission.INTERNET"/><application android:theme="@style/AppTheme" android:label="TradeCycle" android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher" android:usesCleartextTraffic="true"><activity android:name=".MainActivity" android:exported="true"><intent-filter><action android:name="android.intent.action.MAIN"/><category android:name="android.intent.category.LAUNCHER"/></intent-filter></activity></application></manifest>' > android/app/src/main/AndroidManifest.xml
           printf '%s\n' '<resources><style name="AppTheme" parent="android:style/Theme.Material.Light.NoActionBar"><item name="android:fontFamily">sans</item><item name="android:colorAccent">#00d4ff</item></style></resources>' > android/app/src/main/res/values/styles.xml
-          printf '%s\n' 'package com.tradecycle.app;' 'import android.app.Activity; import android.os.Bundle; import android.webkit.*;' 'public class MainActivity extends Activity { protected void onCreate(Bundle b){super.onCreate(b); WebView w=new WebView(this); w.setWebViewClient(new WebViewClient()); WebSettings s=w.getSettings(); s.setJavaScriptEnabled(true); s.setDomStorageEnabled(true); s.setAllowFileAccess(true); s.setAllowContentAccess(true); w.loadUrl("file:///android_asset/TRADECYCLE.html"); setContentView(w);} }' > android/app/src/main/java/com/tradecycle/app/MainActivity.java
+          cat > android/app/src/main/java/com/tradecycle/app/MainActivity.java <<'JAVA'
+          package com.tradecycle.app;
+          import android.app.Activity;
+          import android.content.Intent;
+          import android.net.Uri;
+          import android.os.Bundle;
+          import android.webkit.WebResourceRequest;
+          import android.webkit.WebSettings;
+          import android.webkit.WebView;
+          import android.webkit.WebViewClient;
+          public class MainActivity extends Activity {
+            protected void onCreate(Bundle b){
+              super.onCreate(b);
+              WebView w=new WebView(this);
+              w.setWebViewClient(new WebViewClient(){
+                @Override public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request){
+                  Uri u=request.getUrl();
+                  String s=u.toString();
+                  if(s.startsWith("https://") || s.startsWith("http://")){
+                    try { startActivity(new Intent(Intent.ACTION_VIEW,u)); } catch(Exception ignored) {}
+                    return true;
+                  }
+                  return false;
+                }
+              });
+              WebSettings s=w.getSettings();
+              s.setJavaScriptEnabled(true);
+              s.setDomStorageEnabled(true);
+              s.setAllowFileAccess(true);
+              s.setAllowContentAccess(true);
+              w.loadUrl("file:///android_asset/TRADECYCLE.html");
+              setContentView(w);
+            }
+          }
+          JAVA
       - name: Build installable APK
         run: gradle -p android assembleDebug
       - uses: actions/upload-artifact@v4
@@ -81,6 +144,23 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Create TradeCycle Windows icon
+        shell: pwsh
+        run: |
+          choco install imagemagick -y --no-progress
+          New-Item -ItemType Directory -Force -Path TradeCycleDesktop | Out-Null
+          @'
+          <svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+            <defs><linearGradient id="g" x1="120" y1="900" x2="900" y2="120" gradientUnits="userSpaceOnUse"><stop stop-color="#38bdf8"/><stop offset="1" stop-color="#a78bfa"/></linearGradient></defs>
+            <rect width="1024" height="1024" rx="220" fill="#0A0C10"/>
+            <rect x="32" y="32" width="960" height="960" rx="190" fill="none" stroke="url(#g)" stroke-width="46"/>
+            <path d="M230 690V470M230 470l120-120 125 125 145-220 145 120" fill="none" stroke="url(#g)" stroke-width="70" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M680 275h155v155" fill="none" stroke="#fbbf24" stroke-width="62" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M185 790h650" stroke="#2C3444" stroke-width="36" stroke-linecap="round"/>
+          </svg>
+          '@ | Set-Content TradeCycleDesktop\tradecycle-logo.svg -Encoding UTF8
+          magick TradeCycleDesktop\tradecycle-logo.svg -background none -define icon:auto-resize=256,128,96,64,48,32,16 TradeCycleDesktop\tradecycle.ico
+
       - name: Create Electron project
         shell: pwsh
         run: |
@@ -88,8 +168,8 @@ jobs:
           if (-not $html) { throw 'No TradeCycle HTML found' }
           New-Item -ItemType Directory -Force -Path TradeCycleDesktop | Out-Null
           Copy-Item $html.FullName TradeCycleDesktop\TRADECYCLE.html -Force
-          @("const { app, BrowserWindow } = require('electron');","const path = require('path');","function createWindow(){ const w=new BrowserWindow({width:1440,height:920,minWidth:1100,minHeight:700,backgroundColor:'#07111f',webPreferences:{contextIsolation:true,nodeIntegration:false}}); w.removeMenu(); w.loadFile(path.join(__dirname,'TRADECYCLE.html')); }","app.whenReady().then(()=>{createWindow();app.on('activate',()=>{if(BrowserWindow.getAllWindows().length===0)createWindow();});});","app.on('window-all-closed',()=>{if(process.platform!=='darwin')app.quit();});") | Set-Content TradeCycleDesktop\main.cjs -Encoding UTF8
-          @('{"name":"tradecycle-desktop","version":"1.0.0","description":"TradeCycle desktop application","main":"main.cjs","private":true,"scripts":{"build:win":"electron-builder --win nsis"},"devDependencies":{"electron":"latest","electron-builder":"latest"},"build":{"appId":"com.tradecycle.app","productName":"TradeCycle","files":["main.cjs","TRADECYCLE.html"],"win":{"target":"nsis","artifactName":"TradeCycle-Setup.exe"},"nsis":{"oneClick":false,"perMachine":false,"allowToChangeInstallationDirectory":true}}}') | Set-Content TradeCycleDesktop\package.json -Encoding UTF8
+          @("const { app, BrowserWindow } = require('electron');","const path = require('path');","function createWindow(){ const w=new BrowserWindow({width:1440,height:920,minWidth:1100,minHeight:700,backgroundColor:'#07111f',icon:path.join(__dirname,'tradecycle.ico'),webPreferences:{contextIsolation:true,nodeIntegration:false}}); w.removeMenu(); w.loadFile(path.join(__dirname,'TRADECYCLE.html')); }","app.whenReady().then(()=>{createWindow();app.on('activate',()=>{if(BrowserWindow.getAllWindows().length===0)createWindow();});});","app.on('window-all-closed',()=>{if(process.platform!=='darwin')app.quit();});") | Set-Content TradeCycleDesktop\main.cjs -Encoding UTF8
+          @('{"name":"tradecycle-desktop","version":"1.0.0","description":"TradeCycle desktop application","main":"main.cjs","private":true,"scripts":{"build:win":"electron-builder --win nsis"},"devDependencies":{"electron":"latest","electron-builder":"latest"},"build":{"appId":"com.tradecycle.app","productName":"TradeCycle","files":["main.cjs","TRADECYCLE.html","tradecycle.ico"],"win":{"target":"nsis","icon":"tradecycle.ico","artifactName":"TradeCycle-Setup.exe"},"nsis":{"oneClick":false,"perMachine":false,"allowToChangeInstallationDirectory":true}}}') | Set-Content TradeCycleDesktop\package.json -Encoding UTF8
       - name: Build genuine Windows NSIS installer
         working-directory: TradeCycleDesktop
         run: npm install; npm run build:win
@@ -116,7 +196,7 @@ jobs:
       - name: Publish TradeCycle release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v1.0.0
+          tag_name: v1.1.0
           name: TradeCycle v1.0.\${{ github.run_number }}
           generate_release_notes: true
           files: |
