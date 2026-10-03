@@ -1,0 +1,79 @@
+name: Build NT_FIXED distribution
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Prepare requested NT_FIXED structure
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf NT_FIXED
+          mkdir -p NT_FIXED/assets NT_FIXED/desktop NT_FIXED/downloads
+          cp index.html manifest.webmanifest netlify.toml privacy.html README.md sw.js terms.html NT_FIXED/
+          cp Web/assets/icon.svg NT_FIXED/assets/icon.svg
+          cp Web/index.html NT_FIXED/desktop/TradeCycle-Web.html
+          cp -r Web/assets NT_FIXED/desktop/assets
+          cp Web/privacy.html NT_FIXED/desktop/privacy.html
+          cp Web/terms.html NT_FIXED/desktop/terms.html
+          cp Web/sw.js NT_FIXED/desktop/sw.js
+
+      - name: Download verified platform builds
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p NT_FIXED/downloads
+          gh release download v1.1.1 --repo "${{ github.repository }}" --pattern "TradeCycle.apk" --dir NT_FIXED/downloads --clobber
+          gh release download v1.1.1 --repo "${{ github.repository }}" --pattern "TradeCycle-Setup.exe" --dir NT_FIXED/downloads --clobber
+          test -s NT_FIXED/downloads/TradeCycle.apk
+          test -s NT_FIXED/downloads/TradeCycle-Setup.exe
+          sha256sum NT_FIXED/downloads/TradeCycle.apk
+          sha256sum NT_FIXED/downloads/TradeCycle-Setup.exe
+
+      - name: Verify package structure and web links
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f NT_FIXED/index.html
+          test -f NT_FIXED/manifest.webmanifest
+          test -f NT_FIXED/netlify.toml
+          test -f NT_FIXED/privacy.html
+          test -f NT_FIXED/README.md
+          test -f NT_FIXED/sw.js
+          test -f NT_FIXED/terms.html
+          test -f NT_FIXED/assets/icon.svg
+          test -f NT_FIXED/desktop/TradeCycle-Web.html
+          test -f NT_FIXED/downloads/TradeCycle.apk
+          test -f NT_FIXED/downloads/TradeCycle-Setup.exe
+          grep -q 'desktop/TradeCycle-Web.html' NT_FIXED/index.html
+          grep -q 'downloads/TradeCycle.apk' NT_FIXED/index.html
+          grep -q 'downloads/TradeCycle-Setup.exe' NT_FIXED/index.html
+          grep -q 'buymeacoffee.com/yayazheyv' NT_FIXED/desktop/TradeCycle-Web.html
+          ! grep -qF '\\n' NT_FIXED/desktop/TradeCycle-Web.html || true
+          find NT_FIXED -maxdepth 2 -type f -print | sort
+
+      - name: Create ZIP
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd NT_FIXED/..
+          zip -qr TradeCycle_NT_FIXED.zip NT_FIXED
+          sha256sum TradeCycle_NT_FIXED.zip
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: TradeCycle_NT_FIXED
+          path: TradeCycle_NT_FIXED.zip
+          retention-days: 30
