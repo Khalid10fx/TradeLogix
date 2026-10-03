@@ -57,7 +57,7 @@ jobs:
           HTML=web-content/TRADECYCLE.html
           test -n "$HTML"
           mkdir -p android/app/src/main/assets android/app/src/main/java/com/tradecycle/app android/app/src/main/res/values
-          mkdir -p android/app/src/main/res/drawable-nodpi
+          mkdir -p android/app/src/main/res/drawable-nodpi android/app/src/main/res/drawable
           mkdir -p android/app/src/main/res/mipmap-mdpi android/app/src/main/res/mipmap-hdpi android/app/src/main/res/mipmap-xhdpi android/app/src/main/res/mipmap-xxhdpi android/app/src/main/res/mipmap-xxxhdpi
           mkdir -p android/app/src/main/res/mipmap-anydpi-v26
           cp "$HTML" android/app/src/main/assets/TRADECYCLE.html
