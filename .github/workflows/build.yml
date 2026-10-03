@@ -63,13 +63,15 @@ jobs:
           cp "$HTML" android/app/src/main/assets/TRADECYCLE.html
           cat > android/tradecycle-logo.svg <<'SVG'
           <svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
-            <defs><linearGradient id="g" x1="120" y1="900" x2="900" y2="120" gradientUnits="userSpaceOnUse"><stop stop-color="#38bdf8"/><stop offset="1" stop-color="#a78bfa"/></linearGradient></defs>
-            <rect width="1024" height="1024" rx="220" fill="#0A0C10"/>
-            <rect x="32" y="32" width="960" height="960" rx="190" fill="none" stroke="#38bdf8" stroke-width="46"/>
-            <path d="M230 690 L230 470 L350 350 L475 475 L620 255 L765 375" fill="none" stroke="#38bdf8" stroke-width="70" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M680 275h155v155" fill="none" stroke="#fbbf24" stroke-width="62" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M185 790h650" stroke="#2C3444" stroke-width="36" stroke-linecap="round"/>
-          </svg>
+  <rect width="1024" height="1024" rx="230" fill="#07111F"/>
+  <circle cx="512" cy="512" r="438" fill="#0B1628"/>
+  <circle cx="512" cy="512" r="402" fill="none" stroke="#162A44" stroke-width="18"/>
+  <path d="M255 352H520" stroke="#38BDF8" stroke-width="72" stroke-linecap="round"/>
+  <path d="M387 352V690" stroke="#38BDF8" stroke-width="72" stroke-linecap="round"/>
+  <path d="M585 380C535 420 510 470 510 530C510 625 575 690 675 690C725 690 765 674 800 644" fill="none" stroke="#A78BFA" stroke-width="72" stroke-linecap="round"/>
+  <path d="M654 318L790 318L790 454" fill="none" stroke="#FBBF24" stroke-width="52" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M650 455L790 318" stroke="#FBBF24" stroke-width="52" stroke-linecap="round"/>
+</svg>
           SVG
           convert -background none android/tradecycle-logo.svg android/app/src/main/res/drawable-nodpi/tradecycle_logo.png
           convert android/app/src/main/res/drawable-nodpi/tradecycle_logo.png -resize 48x48 android/app/src/main/res/mipmap-mdpi/ic_launcher.png
@@ -81,15 +83,21 @@ jobs:
           cat > android/app/src/main/res/values/colors.xml <<'XML'
           <resources><color name="tradecycle_icon_bg">#0A0C10</color></resources>
           XML
+          cat > android/app/src/main/res/drawable/tradecycle_monochrome.xml <<'XML'
+          <vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="108dp" android:height="108dp" android:viewportWidth="108" android:viewportHeight="108">
+            <path android:fillColor="#FFFFFFFF" android:pathData="M27,37 L55,37 M41,37 L41,73 M63,41 C56,46 54,51 54,57 C54,68 61,73 72,73 C78,73 83,71 87,67 M69,34 L86,34 L86,51 M69,51 L86,34" android:strokeColor="#FFFFFFFF" android:strokeWidth="7" android:strokeLineCap="round" android:strokeLineJoin="round" android:fillType="nonZero"/>
+          </vector>
+          XML
           cat > android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml <<'XML'
           <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
             <background android:drawable="@color/tradecycle_icon_bg" />
             <foreground android:drawable="@drawable/ic_launcher_foreground" />
+            <monochrome android:drawable="@drawable/tradecycle_monochrome" />
           </adaptive-icon>
           XML
           printf '%s\n' "pluginManagement { repositories { google(); mavenCentral(); gradlePluginPortal() } }" "dependencyResolutionManagement { repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS); repositories { google(); mavenCentral() } }" "rootProject.name='TradeCycleAndroid'" "include ':app'" > android/settings.gradle
           printf '%s\n' "plugins { id 'com.android.application' version '8.7.3' apply false }" > android/build.gradle
-          printf '%s\n' "plugins { id 'com.android.application' }" "android { namespace 'com.tradecycle.app'; compileSdk 35; defaultConfig { applicationId 'com.tradecycle.app'; minSdk 23; targetSdk 35; versionCode 2; versionName '1.1' } }" > android/app/build.gradle
+          printf '%s\n' "plugins { id 'com.android.application' }" "android { namespace 'com.tradecycle.app'; compileSdk 35; defaultConfig { applicationId 'com.tradecycle.app'; minSdk 23; targetSdk 35; versionCode 3; versionName '1.2' } }" > android/app/build.gradle
           printf '%s\n' '<manifest xmlns:android="http://schemas.android.com/apk/res/android"><uses-permission android:name="android.permission.INTERNET"/><application android:theme="@style/AppTheme" android:label="TradeCycle" android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher" android:usesCleartextTraffic="true"><activity android:name=".MainActivity" android:exported="true"><intent-filter><action android:name="android.intent.action.MAIN"/><category android:name="android.intent.category.LAUNCHER"/></intent-filter></activity></application></manifest>' > android/app/src/main/AndroidManifest.xml
           printf '%s\n' '<resources><style name="AppTheme" parent="android:style/Theme.Material.Light.NoActionBar"><item name="android:fontFamily">sans</item><item name="android:colorAccent">#00d4ff</item></style></resources>' > android/app/src/main/res/values/styles.xml
           cat > android/app/src/main/java/com/tradecycle/app/MainActivity.java <<'JAVA'
@@ -200,8 +208,8 @@ jobs:
       - name: Publish TradeCycle release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v1.1.0
-          name: TradeCycle v1.0.\${{ github.run_number }}
+          tag_name: v1.1.1
+          name: TradeCycle v1.1.\${{ github.run_number }}
           generate_release_notes: true
           files: |
             release-assets/TradeCycle.apk
