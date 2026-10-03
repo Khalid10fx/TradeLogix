@@ -118,6 +118,8 @@ jobs:
                 }
               });
               WebSettings s=w.getSettings();
+              s.setSupportMultipleWindows(false);
+              s.setJavaScriptCanOpenWindowsAutomatically(false);
               s.setJavaScriptEnabled(true);
               s.setDomStorageEnabled(true);
               s.setAllowFileAccess(true);
