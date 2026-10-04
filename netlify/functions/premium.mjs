@@ -21,13 +21,11 @@ function requestId() { return "TC-" + randomHex(6).slice(0,6).toUpperCase(); }
 function premiumCode() { const r = randomHex(9).toUpperCase(); return "TC-" + r.slice(0,4) + "-" + r.slice(4,8) + "-" + r.slice(8,12); }
 
 async function sendMail(to, subject, text, html, replyTo) {
-  const key = process.env.RESEND_API_KEY, from = process.env.RESEND_FROM;
-  if (!key || !from) throw new Error("Missing RESEND_API_KEY or RESEND_FROM");
-  const payload = { from: from, to: [to], subject: subject, text: text, html: html };
-  if (replyTo) payload.reply_to = replyTo;
-  const response = await fetch("https://api.resend.com/emails", { method:"POST", headers:{ "Authorization":"Bearer " + key, "Content-Type":"application/json" }, body:JSON.stringify(payload) });
-  if (!response.ok) throw new Error("Resend " + response.status + " " + (await response.text()).slice(0,300));
-  return response.json();
+  const endpoint = "https://formsubmit.co/ajax/" + encodeURIComponent(to);
+  const payload = { _subject: subject, email: replyTo || "", message: text, html_message: html };
+  const response = await fetch(endpoint, { method:"POST", headers:{ "Content-Type":"application/json", "Accept":"application/json" }, body:JSON.stringify(payload) });
+  if (!response.ok) throw new Error("FormSubmit " + response.status + " " + (await response.text()).slice(0,300));
+  return response.json().catch(function(){ return {}; });
 }
 
 async function requestPremium(body, req) {
