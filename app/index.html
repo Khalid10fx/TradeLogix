@@ -517,6 +517,8 @@ input:focus,select:focus,textarea:focus{
 </style>
 </head>
 <body>
+<form name="premium-request" method="POST" data-netlify="true" netlify-honeypot="bot-field" hidden><input type="hidden" name="form-name" value="premium-request"><input type="text" name="bot-field"><input type="email" name="email"><input type="text" name="unlock_code"></form>
+
 <div id="tcConsentOverlay">
   <div class="tc-consent-card">
     <div class="tc-consent-brand">TRADECYCLE</div>
@@ -556,7 +558,7 @@ input:focus,select:focus,textarea:focus{
       <p><b>6. Password lock.</b> The optional TradeCycle password lock is a client-side convenience feature. It is not a secure account system, encryption layer or guarantee that a technically skilled person cannot bypass access. Do not rely on it as the only protection for confidential information.</p>
       <p><b>7. CSV and broker data.</b> You may import data from brokers, trading platforms and prop firms where you have the right to do so. You are responsible for complying with those providers' terms. The current Broker Connect interface is marked as coming soon; no promise is made that a particular broker integration is currently available.</p>
       <p><b>8. Third-party services.</b> TradeCycle may link to or use third-party services for payments, advertising, email/form processing, market data or future integrations. Those services are governed by their own terms and policies. TradeCycle is not responsible for third-party outages, content, policies, security incidents or service changes.</p>
-      <p><b>9. Premium.</b> TradeCycle currently presents a one-time $5 Premium/ad-removal purchase flow. Premium access, features and payment handling may change as the product develops. Payment is processed through the payment destination shown in the app; TradeCycle does not request or store your card number inside the journal. Any applicable payment/refund terms shown by the payment provider also apply.</p>
+      <p><b>9. Premium.</b> TradeCycle currently presents Premium as a $4.99 30-day subscription. Premium access expires after 30 days, while journal data remains stored on the device. Premium access, features and payment handling may change as the product develops. Payment is processed through the payment destination shown in the app; TradeCycle does not request or store your card number inside the journal. Any applicable payment/refund terms shown by the payment provider also apply.</p>
       <p><b>10. Acceptable use.</b> Do not use TradeCycle to break the law, violate another person's rights, distribute malicious code, interfere with the app or its services, abuse third-party services, or submit information you do not have permission to process. Do not use the app as a substitute for professional financial, legal or tax advice.</p>
       <p><b>11. Intellectual property.</b> TradeCycle's software, branding, interface, original text, graphics and other product materials are protected by applicable intellectual-property laws. Except where applicable law or a separate license permits it, you may not copy, resell, redistribute, reverse-engineer or commercially exploit the product or its protected materials without permission.</p>
       <p><b>12. Availability and changes.</b> Features may be added, removed, changed, suspended or discontinued. TradeCycle may contain bugs or depend on browsers, operating systems, networks and third-party services that are outside its control.</p>
@@ -1147,7 +1149,7 @@ input:focus,select:focus,textarea:focus{
   </div>
   <div class="drawer-item" id="removeAdsDrawerItem">
     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-    Get Premium ($5)
+    Get Premium ($4.99 / 30 days)
   </div>
   <div class="drawer-item" id="recapDrawerItem">
     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="9" x2="15" y2="9"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="12" y2="17"/></svg>
@@ -1196,7 +1198,7 @@ input:focus,select:focus,textarea:focus{
         <p><b>Service.</b> TradeCycle is a journal, analysis and educational tool. It is not a broker, investment adviser, financial planner, exchange or execution service.</p>
         <p><b>No financial advice or guarantees.</b> Journal statistics, charts, psychology content and trading-related material are informational only. TradeCycle does not promise profits, accuracy, win rates or future results. You remain responsible for your trading decisions and losses.</p>
         <p><b>Your data and imports.</b> You are responsible for the accuracy and lawful use of information you enter or import, and for maintaining your own backups.</p>
-        <p><b>Third-party services and Premium.</b> Payments are handled through the payment destination shown in the app. Third-party services have their own terms. TradeCycle currently presents Premium at $5, subject to the payment flow shown at the time of purchase.</p>
+        <p><b>Third-party services and Premium.</b> Payments are handled through the payment destination shown in the app. Third-party services have their own terms. TradeCycle currently presents Premium at $4.99 for 30 days, subject to the payment flow shown at the time of purchase.</p>
         <p><b>Acceptable use.</b> Do not use TradeCycle unlawfully, to abuse third-party services, distribute malware, interfere with the app, or process information you do not have permission to use.</p>
         <p><b>Availability and liability.</b> Features can change or be unavailable. To the extent permitted by law, TradeCycle is provided as-is and does not guarantee uninterrupted or error-free operation. Liability is limited to the extent permitted by applicable law, and nothing excludes liability that cannot legally be excluded.</p>
         <p><b>Changes and contact.</b> These terms may change as the product develops. Use the official TradeCycle support/contact channel for legal or support questions.</p>
@@ -1291,23 +1293,23 @@ input:focus,select:focus,textarea:focus{
 <div class="modal-bg" id="removeAdsModal">
   <div class="modal" onclick="event.stopPropagation()">
     <div class="modal-head">
-      <div class="modal-title">⭐ GET PREMIUM — $5</div>
+      <div class="modal-title">⭐ GET PREMIUM — $4.99 / 30 DAYS</div>
       <svg class="close-x" id="removeAdsClose" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
     </div>
 
     <div id="removeAdsStep1">
       <div style="font-size:12px; color:var(--muted); line-height:1.6; margin-bottom:14px;">
-        Pay $5 once, unlock forever:
+        Pay $4.99 for 30 days:
       </div>
       <div style="font-size:12px; color:var(--text); line-height:1.8; margin-bottom:14px;">
         ✓ Ads gone completely<br>
         ✓ Monthly Recap Card — a shareable stats card of your month
       </div>
       <div style="font-size:12px; color:var(--text); line-height:1.8; margin-bottom:14px;">
-        <b>1.</b> Tap below and send $5<br>
-        <b>2.</b> Enter your email and request your unlock code
+        <b>1.</b> Pay $4.99 below<br>
+        <b>2.</b> Enter the email you paid with and the code we give you
       </div>
-      <a class="btn-primary" href="https://buymeacoffee.com/yayazheyv" rel="noopener noreferrer" style="width:100%; justify-content:center; margin-bottom:14px; text-decoration:none;">☕ Pay $5 on Buy Me a Coffee</a>
+      <a class="btn-primary" href="https://buymeacoffee.com/yayazheyv" rel="noopener noreferrer" style="width:100%; justify-content:center; margin-bottom:14px; text-decoration:none;">☕ Pay $4.99 on Buy Me a Coffee</a>
       <div style="font-size:10px; color:var(--faint); margin:-4px 0 12px; text-align:center;">Secure payment opens on Buy Me a Coffee.</div>
       <input type="email" id="adReqEmailInput" placeholder="Email you paid with" autocomplete="off">
       <button class="btn-primary" id="adReqSendBtn" style="width:100%; justify-content:center; margin-top:8px;">I've Paid — Request My Code</button>
@@ -1316,7 +1318,7 @@ input:focus,select:focus,textarea:focus{
 
     <div id="removeAdsStep2" style="display:none;">
       <div style="font-size:12px; color:var(--muted); line-height:1.6; margin-bottom:14px;">
-        Request sent! Once Khalid confirms your payment, he'll send you a code. Enter your email and that code below.
+        Enter the email you paid with and the unique 30-day code you received after payment. Your journal data is never deleted when Premium expires.
       </div>
       <input type="email" id="adUnlockEmailInput" placeholder="Email you paid with" autocomplete="off">
       <input type="text" id="adUnlockCodeInput" placeholder="Unlock code" autocomplete="off">
@@ -1648,62 +1650,47 @@ async function loadPsychProgress(){
   }catch(e){ psychRead = []; }
 }
 
-// --- Remove Ads ($5 one-time, same request-to-code pattern as the access gate) ---
+// --- Premium subscription: $4.99 for 30 days ---
+// Journal/trading data uses separate storage keys and is never cleared when Premium expires.
 const AD_REMOVED_KEY = "ict-journal-ads-removed";
+const PREMIUM_EXPIRY_KEY = "tradecycle-premium-expiry-v2";
+const PREMIUM_EMAIL_KEY = "tradecycle-premium-email-v2";
+const PREMIUM_DAYS = 30;
+const PREMIUM_MS = PREMIUM_DAYS * 24 * 60 * 60 * 1000;
 const AD_SALT = "khalid-adremoval-2026-salt-q9x";
 const POPUNDER_SRC = "https://pl31269502.profitableratecpmnetwork.com/bb/1c/9f/bb1c9f6b3faa683819f503c127832f87.js";
 const SOCIALBAR_SRC = "https://pl31226788.profitableratecpmnetwork.com/97/f3/d7/97f3d7fc529b13530280660f50ae86d0.js";
 
-async function codeForAdEmail(email){
+async function codeForAdEmail(email, cycleStart){
   const normalized = email.trim().toLowerCase();
-  const hash = await sha256(normalized + AD_SALT);
+  const cycle = Math.floor(Number(cycleStart || Date.now()) / PREMIUM_MS);
+  const hash = await sha256(normalized + "|" + cycle + "|" + AD_SALT);
   const short = hash.slice(0,8).toUpperCase();
   return short.slice(0,4) + "-" + short.slice(4,8);
 }
-async function areAdsRemoved(){
+async function getPremiumExpiry(){
   try{
-    const res = await storageGet(AD_REMOVED_KEY);
-    return !!(res && res.value === "true");
-  }catch(e){ return false; }
+    const res = await storageGet(PREMIUM_EXPIRY_KEY);
+    const n = Number(res && res.value);
+    return Number.isFinite(n) ? n : 0;
+  }catch(e){ return 0; }
 }
-async function injectPopunderIfNeeded(){
-  const removed = await areAdsRemoved();
-  if(removed) return;
-  const script = document.createElement("script");
-  script.src = POPUNDER_SRC;
-  document.body.appendChild(script);
+async function areAdsRemoved(){
+  const expiry = await getPremiumExpiry();
+  if(expiry > Date.now()) return true;
+  try{ await storageSet(AD_REMOVED_KEY, "false"); }catch(e){}
+  return false;
 }
-async function injectSocialBarIfNeeded(){
-  const removed = await areAdsRemoved();
-  if(removed) return;
-  const script = document.createElement("script");
-  script.src = SOCIALBAR_SRC;
-  document.body.appendChild(script);
+async function activatePremium(email){
+  const now = Date.now();
+  const current = await getPremiumExpiry();
+  const base = Math.max(now, current || 0);
+  const expiry = base + PREMIUM_MS;
+  await storageSet(PREMIUM_EXPIRY_KEY, String(expiry));
+  await storageSet(PREMIUM_EMAIL_KEY, email.trim().toLowerCase());
+  await storageSet(AD_REMOVED_KEY, "true");
+  return expiry;
 }
-async function injectBannerIfNeeded(){
-  const removed = await areAdsRemoved();
-  const container = document.getElementById("adBannerContainer");
-  if(removed){
-    container.classList.add("hidden");
-    document.body.style.paddingBottom = "16px";
-    return;
-  }
-  container.classList.remove("hidden");
-  const slot = document.getElementById("adBannerSlot");
-  const configScript = document.createElement("script");
-  configScript.textContent = `atOptions = { 'key':'efce264b5d905cc82f2199b8560ec64f', 'format':'iframe', 'height':50, 'width':320, 'params':{} };`;
-  slot.appendChild(configScript);
-  const adScript = document.createElement("script");
-  adScript.src = "https://www.highrevenueformat.com/efce264b5d905cc82f2199b8560ec64f/invoke.js";
-  slot.appendChild(adScript);
-}
-async function injectAdsIfNeeded(){
-  await injectBannerIfNeeded();
-  await injectPopunderIfNeeded();
-  // SocialBar still disabled — testing banner + this second ad first.
-  // await injectSocialBarIfNeeded();
-}
-
 document.getElementById("removeAdsDrawerItem").addEventListener("click", ()=>{
   closeDrawer();
   document.getElementById("removeAdsStep1").style.display = "block";
@@ -1721,37 +1708,11 @@ document.getElementById("adReqSendBtn").addEventListener("click", async ()=>{
   const errEl = document.getElementById("adReqError");
   const email = document.getElementById("adReqEmailInput").value.trim();
   if(!email){ errEl.textContent = "Enter the email you paid with."; return; }
-  isSendingAdRequest = true;
-  const btn = document.getElementById("adReqSendBtn");
-  btn.disabled = true; btn.textContent = "Sending…";
   errEl.textContent = "";
-  try{
-    const theirCode = await codeForAdEmail(email);
-    const res = await fetch("https://api.web3forms.com/submit", {
-      method: "POST",
-      headers: {"Content-Type":"application/json", "Accept":"application/json"},
-      body: JSON.stringify({
-        access_key: WEB3FORMS_KEY,
-        subject: `Remove Ads request from ${email}`,
-        from_name: email,
-        email,
-        "their unlock code (send this once payment is confirmed)": theirCode,
-      }),
-    });
-    const data = await res.json();
-    if(data.success){
-      document.getElementById("adUnlockEmailInput").value = email;
-      document.getElementById("removeAdsStep1").style.display = "none";
-      document.getElementById("removeAdsStep2").style.display = "block";
-    } else {
-      errEl.textContent = "Couldn't send the request — try again in a moment.";
-    }
-  }catch(e){
-    errEl.textContent = "Couldn't send the request — check your connection and try again.";
-  } finally {
-    isSendingAdRequest = false;
-    btn.disabled = false; btn.textContent = "I've Paid — Request My Code";
-  }
+  document.getElementById("adUnlockEmailInput").value = email;
+  document.getElementById("removeAdsStep1").style.display = "none";
+  document.getElementById("removeAdsStep2").style.display = "block";
+  document.getElementById("adUnlockCodeInput").focus();
 });
 
 document.getElementById("adUnlockBtn").addEventListener("click", async ()=>{
@@ -1759,19 +1720,27 @@ document.getElementById("adUnlockBtn").addEventListener("click", async ()=>{
   const email = document.getElementById("adUnlockEmailInput").value.trim();
   const entered = document.getElementById("adUnlockCodeInput").value.trim().toUpperCase();
   if(!email){ errEl.textContent = "Enter the email you paid with."; return; }
-  const expected = await codeForAdEmail(email);
+  if(!entered){ errEl.textContent = "Enter the unlock code you received after payment."; return; }
+  const cycleStart = Math.floor(Date.now() / PREMIUM_MS) * PREMIUM_MS;
+  const expected = await codeForAdEmail(email, cycleStart);
   if(entered === expected){
-    try{ await storageSet(AD_REMOVED_KEY, "true"); }catch(e){}
-    document.getElementById("adBannerContainer").classList.add("hidden");
-    document.body.style.paddingBottom = "16px";
-    document.getElementById("removeAdsModal").classList.remove("open");
-    showToast("Premium unlocked — thank you! 🙏🏽 Everything's open now.", "PREMIUM");
-    renderRecapView();
-    updateHomePremiumLock();
-    updateAchievementsLock();
-    updatePerformanceLock();
-    updateChartLock();
-    renderGoal();
+    try{
+      const expiry = await activatePremium(email);
+      document.getElementById("adBannerContainer").classList.add("hidden");
+      document.body.style.paddingBottom = "16px";
+      document.getElementById("removeAdsModal").classList.remove("open");
+      document.getElementById("adUnlockCodeInput").value = "";
+      const expiryDate = new Date(expiry).toLocaleDateString(undefined,{year:"numeric",month:"short",day:"numeric"});
+      showToast(`Premium active until ${expiryDate}. Your journal data stays safe.`, "PREMIUM");
+      renderRecapView();
+      updateHomePremiumLock();
+      updateAchievementsLock();
+      updatePerformanceLock();
+      updateChartLock();
+      renderGoal();
+    }catch(e){
+      errEl.textContent = "Couldn't activate Premium. Please try again.";
+    }
   } else {
     errEl.textContent = "That email/code combination isn't right.";
   }
