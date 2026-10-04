@@ -20,6 +20,12 @@ jobs:
           unzip -q khalid-journal-app.zip -d web-content
           find web-content -type f -iname 'TRADECYCLE.html' -delete
           cp TRADECYCLE.html web-content/TRADECYCLE.html
+          mkdir -p web-content/app
+          cp TRADECYCLE.html web-content/app/index.html
+          if [ -n "${{ secrets.WEB3FORMS_KEY }}" ]; then
+            sed -i "s|__WEB3FORMS_KEY__|${{ secrets.WEB3FORMS_KEY }}|g" web-content/TRADECYCLE.html
+            sed -i "s|__WEB3FORMS_KEY__|${{ secrets.WEB3FORMS_KEY }}|g" web-content/app/index.html
+          fi
           find web-content -type f | head -100
       - uses: actions/upload-artifact@v4
         with:
