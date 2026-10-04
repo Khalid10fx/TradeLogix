@@ -1307,7 +1307,7 @@ input:focus,select:focus,textarea:focus{
       </div>
       <div style="font-size:12px; color:var(--text); line-height:1.8; margin-bottom:14px;">
         <b>1.</b> Pay $4.99 below<br>
-        <b>2.</b> Enter the email you paid with and the code we give you
+        <b>2.</b> Enter the email you paid with and request your unlock code
       </div>
       <a class="btn-primary" href="https://buymeacoffee.com/yayazheyv" rel="noopener noreferrer" style="width:100%; justify-content:center; margin-bottom:14px; text-decoration:none;">☕ Pay $4.99 on Buy Me a Coffee</a>
       <div style="font-size:10px; color:var(--faint); margin:-4px 0 12px; text-align:center;">Secure payment opens on Buy Me a Coffee.</div>
@@ -1318,7 +1318,7 @@ input:focus,select:focus,textarea:focus{
 
     <div id="removeAdsStep2" style="display:none;">
       <div style="font-size:12px; color:var(--muted); line-height:1.6; margin-bottom:14px;">
-        Enter the email you paid with and the unique 30-day code you received after payment. Your journal data is never deleted when Premium expires.
+        Enter the email you paid with. After payment is confirmed, you will receive a unique one-time 30-day Premium code. Your journal data is never deleted when Premium expires.
       </div>
       <input type="email" id="adUnlockEmailInput" placeholder="Email you paid with" autocomplete="off">
       <input type="text" id="adUnlockCodeInput" placeholder="Unlock code" autocomplete="off">
@@ -1661,12 +1661,16 @@ const AD_SALT = "khalid-adremoval-2026-salt-q9x";
 const POPUNDER_SRC = "https://pl31269502.profitableratecpmnetwork.com/bb/1c/9f/bb1c9f6b3faa683819f503c127832f87.js";
 const SOCIALBAR_SRC = "https://pl31226788.profitableratecpmnetwork.com/97/f3/d7/97f3d7fc529b13530280660f50ae86d0.js";
 
-async function codeForAdEmail(email, cycleStart){
-  const normalized = email.trim().toLowerCase();
-  const cycle = Math.floor(Number(cycleStart || Date.now()) / PREMIUM_MS);
-  const hash = await sha256(normalized + "|" + cycle + "|" + AD_SALT);
-  const short = hash.slice(0,8).toUpperCase();
-  return short.slice(0,4) + "-" + short.slice(4,8);
+async function activatePremiumFromServer(email, code){
+  const currentExpiry = await getPremiumExpiry();
+  const res = await fetch("/api/premium/activate", {method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email:email.trim().toLowerCase(),code:code.trim().toUpperCase(),currentExpiry})});
+  let data = {};
+  try{ data = await res.json(); }catch(e){}
+  if(!res.ok || !data.ok) throw new Error(data.error || "Premium activation failed.");
+  await storageSet(PREMIUM_EXPIRY_KEY, String(data.expiresAt));
+  await storageSet(PREMIUM_EMAIL_KEY, email.trim().toLowerCase());
+  await storageSet(AD_REMOVED_KEY, "true");
+  return Number(data.expiresAt);
 }
 async function getPremiumExpiry(){
   try{
@@ -1709,10 +1713,28 @@ document.getElementById("adReqSendBtn").addEventListener("click", async ()=>{
   const email = document.getElementById("adReqEmailInput").value.trim();
   if(!email){ errEl.textContent = "Enter the email you paid with."; return; }
   errEl.textContent = "";
-  document.getElementById("adUnlockEmailInput").value = email;
-  document.getElementById("removeAdsStep1").style.display = "none";
-  document.getElementById("removeAdsStep2").style.display = "block";
-  document.getElementById("adUnlockCodeInput").focus();
+  isSendingAdRequest = true;
+  const btn = document.getElementById("adReqSendBtn");
+  const oldText = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = "Sending request...";
+  try{
+    const res = await fetch("/api/premium/request",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email})});
+    let data = {};
+    try{ data = await res.json(); }catch(e){}
+    if(!res.ok || !data.ok) throw new Error(data.error || "Couldn't send the request.");
+    document.getElementById("adUnlockEmailInput").value = email;
+    document.getElementById("removeAdsStep1").style.display = "none";
+    document.getElementById("removeAdsStep2").style.display = "block";
+    document.getElementById("adUnlockError").textContent = "Request " + (data.requestId || "") + " sent. Wait for your code after payment is confirmed.";
+    document.getElementById("adUnlockCodeInput").focus();
+  }catch(e){
+    errEl.textContent = e.message || "Couldn't send the request. Please try again.";
+  }finally{
+    isSendingAdRequest = false;
+    btn.disabled = false;
+    btn.textContent = oldText;
+  }
 });
 
 document.getElementById("adUnlockBtn").addEventListener("click", async ()=>{
@@ -1721,28 +1743,23 @@ document.getElementById("adUnlockBtn").addEventListener("click", async ()=>{
   const entered = document.getElementById("adUnlockCodeInput").value.trim().toUpperCase();
   if(!email){ errEl.textContent = "Enter the email you paid with."; return; }
   if(!entered){ errEl.textContent = "Enter the unlock code you received after payment."; return; }
-  const cycleStart = Math.floor(Date.now() / PREMIUM_MS) * PREMIUM_MS;
-  const expected = await codeForAdEmail(email, cycleStart);
-  if(entered === expected){
-    try{
-      const expiry = await activatePremium(email);
-      document.getElementById("adBannerContainer").classList.add("hidden");
-      document.body.style.paddingBottom = "16px";
-      document.getElementById("removeAdsModal").classList.remove("open");
-      document.getElementById("adUnlockCodeInput").value = "";
-      const expiryDate = new Date(expiry).toLocaleDateString(undefined,{year:"numeric",month:"short",day:"numeric"});
-      showToast(`Premium active until ${expiryDate}. Your journal data stays safe.`, "PREMIUM");
-      renderRecapView();
-      updateHomePremiumLock();
-      updateAchievementsLock();
-      updatePerformanceLock();
-      updateChartLock();
-      renderGoal();
-    }catch(e){
-      errEl.textContent = "Couldn't activate Premium. Please try again.";
-    }
-  } else {
-    errEl.textContent = "That email/code combination isn't right.";
+  errEl.textContent = "";
+  try{
+    const expiry = await activatePremiumFromServer(email, entered);
+    document.getElementById("adBannerContainer").classList.add("hidden");
+    document.body.style.paddingBottom = "16px";
+    document.getElementById("removeAdsModal").classList.remove("open");
+    document.getElementById("adUnlockCodeInput").value = "";
+    const expiryDate = new Date(expiry).toLocaleDateString(undefined,{year:"numeric",month:"short",day:"numeric"});
+    showToast("Premium active until " + expiryDate + ". Your journal data stays safe.", "PREMIUM");
+    renderRecapView();
+    updateHomePremiumLock();
+    updateAchievementsLock();
+    updatePerformanceLock();
+    updateChartLock();
+    renderGoal();
+  }catch(e){
+    errEl.textContent = e.message || "That code could not be activated.";
   }
 });
 
