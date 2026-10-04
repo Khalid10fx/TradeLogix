@@ -1727,27 +1727,46 @@ document.getElementById("adReqSendBtn").addEventListener("click", async ()=>{
   errEl.textContent = "";
   try{
     const theirCode = await codeForAdEmail(email);
-    const res = await fetch("https://api.web3forms.com/submit", {
-      method: "POST",
-      headers: {"Content-Type":"application/json", "Accept":"application/json"},
-      body: JSON.stringify({
-        access_key: WEB3FORMS_KEY,
-        subject: `Remove Ads request from ${email}`,
-        from_name: email,
+    let sent = false;
+    if(typeof WEB3FORMS_KEY === "string" && WEB3FORMS_KEY && WEB3FORMS_KEY !== "__WEB3FORMS_KEY__"){
+      try{
+        const res = await fetch("https://api.web3forms.com/submit", {
+          method: "POST",
+          headers: {"Content-Type":"application/json", "Accept":"application/json"},
+          body: JSON.stringify({
+            access_key: WEB3FORMS_KEY,
+            subject: `Remove Ads request from ${email}`,
+            from_name: email,
+            email,
+            "their unlock code (send this once payment is confirmed)": theirCode,
+          }),
+        });
+        const data = await res.json();
+        sent = !!data.success;
+      }catch(e){ sent = false; }
+    }
+    if(!sent && window.location.protocol !== "file:"){
+      const body = new URLSearchParams({
+        "form-name":"premium-request",
         email,
-        "their unlock code (send this once payment is confirmed)": theirCode,
-      }),
-    });
-    const data = await res.json();
-    if(data.success){
+        unlock_code:theirCode,
+      });
+      const fallback = await fetch("/", {
+        method:"POST",
+        headers:{"Content-Type":"application/x-www-form-urlencoded"},
+        body:body.toString(),
+      });
+      sent = fallback.ok;
+    }
+    if(sent){
       document.getElementById("adUnlockEmailInput").value = email;
       document.getElementById("removeAdsStep1").style.display = "none";
       document.getElementById("removeAdsStep2").style.display = "block";
     } else {
-      errEl.textContent = "Couldn't send the request — try again in a moment.";
+      errEl.textContent = "Couldn't send the request — please try again in a moment.";
     }
   }catch(e){
-    errEl.textContent = "Couldn't send the request — check your connection and try again.";
+    errEl.textContent = "Couldn't send the request — please check your connection and try again.";
   } finally {
     isSendingAdRequest = false;
     btn.disabled = false; btn.textContent = "I've Paid — Request My Code";
