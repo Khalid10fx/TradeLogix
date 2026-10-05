@@ -1694,18 +1694,71 @@ async function activatePremium(email){
   await storageSet(AD_REMOVED_KEY, "true");
   return expiry;
 }
-document.getElementById("removeAdsDrawerItem").addEventListener("click", ()=>{
+document.getElementById("removeAdsDrawerItem").addEventListener("click", async ()=>{
   closeDrawer();
-  document.getElementById("removeAdsStep1").style.display = "block";
-  document.getElementById("removeAdsStep2").style.display = "none";
+  stopPremiumPolling();
   document.getElementById("adReqEmailInput").value = "";
   document.getElementById("adReqError").textContent = "";
+  const tokenRes=await storageGet(PREMIUM_REQUEST_TOKEN_KEY);
+  const token=tokenRes && tokenRes.value ? String(tokenRes.value) : "";
+  if(token){
+    const emailRes=await storageGet(PREMIUM_EMAIL_KEY);
+    document.getElementById("adUnlockEmailInput").value=emailRes && emailRes.value ? emailRes.value : "";
+    document.getElementById("removeAdsStep1").style.display = "none";
+    document.getElementById("removeAdsStep2").style.display = "block";
+    document.getElementById("adUnlockCodeInput").value = "";
+    document.getElementById("adUnlockError").textContent = "Checking your Premium request...";
+    startPremiumPolling(token);
+  }else{
+    document.getElementById("removeAdsStep1").style.display = "block";
+    document.getElementById("removeAdsStep2").style.display = "none";
+  }
   document.getElementById("removeAdsModal").classList.add("open");
 });
-document.getElementById("removeAdsClose").addEventListener("click", ()=> document.getElementById("removeAdsModal").classList.remove("open"));
+document.getElementById("removeAdsClose").addEventListener("click", ()=> { stopPremiumPolling(); document.getElementById("removeAdsModal").classList.remove("open"); });
 document.getElementById("removeAdsModal").addEventListener("click", ()=> document.getElementById("removeAdsModal").classList.remove("open"));
 
+const PREMIUM_REQUEST_TOKEN_KEY = "tradecycle-premium-request-token-v1";
+const PREMIUM_REQUEST_ID_KEY = "tradecycle-premium-request-id-v1";
 let isSendingAdRequest = false;
+let premiumPollTimer = null;
+
+function stopPremiumPolling(){
+  if(premiumPollTimer){ clearInterval(premiumPollTimer); premiumPollTimer=null; }
+}
+
+async function pollPremiumRequest(clientToken){
+  if(!clientToken)return;
+  const errEl=document.getElementById("adUnlockError");
+  try{
+    const res=await fetch("/api/premium/status",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({clientToken})});
+    let data={};try{data=await res.json();}catch(e){}
+    if(!res.ok||!data.ok) return;
+    if(data.status==="pending"){
+      errEl.textContent="Request "+(data.requestId||"")+" is waiting for payment approval.";
+      return;
+    }
+    if(data.status==="denied"){
+      stopPremiumPolling();
+      try{ await storageDelete(PREMIUM_REQUEST_TOKEN_KEY); await storageDelete(PREMIUM_REQUEST_ID_KEY); }catch(e){}
+      errEl.textContent="Your payment could not be confirmed. You can request Premium again after checking your payment.";
+      return;
+    }
+    if(data.status==="approved" && data.code){
+      stopPremiumPolling();
+      document.getElementById("adUnlockCodeInput").value=data.code;
+      errEl.textContent="Payment approved. Your one-time code was generated automatically. Click Unlock Premium.";
+    }
+  }catch(e){}
+}
+
+async function startPremiumPolling(clientToken){
+  stopPremiumPolling();
+  if(!clientToken)return;
+  await pollPremiumRequest(clientToken);
+  premiumPollTimer=setInterval(()=>pollPremiumRequest(clientToken),4000);
+}
+
 document.getElementById("adReqSendBtn").addEventListener("click", async ()=>{
   if(isSendingAdRequest)return;
   const errEl=document.getElementById("adReqError"), email=document.getElementById("adReqEmailInput").value.trim();
@@ -1716,11 +1769,16 @@ document.getElementById("adReqSendBtn").addEventListener("click", async ()=>{
     const res=await fetch("/api/premium/request",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email})});
     let data={};try{data=await res.json();}catch(e){}
     if(!res.ok||!data.ok)throw new Error(data.error||"Couldn't send the request.");
+    await storageSet(PREMIUM_REQUEST_TOKEN_KEY,String(data.clientToken||""));
+    await storageSet(PREMIUM_REQUEST_ID_KEY,String(data.requestId||""));
+    await storageSet(PREMIUM_EMAIL_KEY,email.trim().toLowerCase());
     document.getElementById("adUnlockEmailInput").value=email;
     document.getElementById("removeAdsStep1").style.display="none";
     document.getElementById("removeAdsStep2").style.display="block";
-    document.getElementById("adUnlockError").textContent="Request "+(data.requestId||"")+" sent. Wait for your code after payment is confirmed.";
+    document.getElementById("adUnlockCodeInput").value="";
+    document.getElementById("adUnlockError").textContent="Request "+(data.requestId||"")+" sent. Waiting for payment approval...";
     document.getElementById("adUnlockCodeInput").focus();
+    startPremiumPolling(String(data.clientToken||""));
   }catch(e){errEl.textContent=e.message||"Couldn't send the request. Please try again.";}
   finally{isSendingAdRequest=false;btn.disabled=false;btn.textContent=oldText;}
 });
@@ -1728,10 +1786,12 @@ document.getElementById("adReqSendBtn").addEventListener("click", async ()=>{
 document.getElementById("adUnlockBtn").addEventListener("click", async ()=>{
   const errEl=document.getElementById("adUnlockError"),email=document.getElementById("adUnlockEmailInput").value.trim(),entered=document.getElementById("adUnlockCodeInput").value.trim().toUpperCase();
   if(!email){errEl.textContent="Enter the email you paid with.";return;}
-  if(!entered){errEl.textContent="Enter the unlock code you received after payment.";return;}
+  if(!entered){errEl.textContent="Your code will appear automatically after payment approval.";return;}
   errEl.textContent="";
   try{
     const expiry=await activatePremiumFromServer(email,entered);
+    stopPremiumPolling();
+    try{ await storageDelete(PREMIUM_REQUEST_TOKEN_KEY); await storageDelete(PREMIUM_REQUEST_ID_KEY); }catch(e){}
     document.getElementById("adBannerContainer").classList.add("hidden");
     document.body.style.paddingBottom="16px";
     document.getElementById("removeAdsModal").classList.remove("open");
@@ -1741,6 +1801,20 @@ document.getElementById("adUnlockBtn").addEventListener("click", async ()=>{
     renderRecapView();updateHomePremiumLock();updateAchievementsLock();updatePerformanceLock();updateChartLock();renderGoal();
   }catch(e){errEl.textContent=e.message||"That code could not be activated.";}
 });
+
+(async ()=>{
+  try{
+    const tokenRes=await storageGet(PREMIUM_REQUEST_TOKEN_KEY);
+    const token=tokenRes && tokenRes.value ? String(tokenRes.value) : "";
+    if(token){
+      const emailRes=await storageGet(PREMIUM_EMAIL_KEY);
+      document.getElementById("adUnlockEmailInput").value=emailRes && emailRes.value ? emailRes.value : "";
+      document.getElementById("removeAdsStep1").style.display="none";
+      document.getElementById("removeAdsStep2").style.display="block";
+      startPremiumPolling(token);
+    }
+  }catch(e){}
+})();
 
 // --- Access gate removed: open directly to the normal welcome/password flow ---
 async function initGate(){
