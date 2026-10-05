@@ -1768,7 +1768,34 @@ document.getElementById("adReqSendBtn").addEventListener("click", async ()=>{
   try{
     const res=await fetch("/api/premium/request",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email})});
     let data={};try{data=await res.json();}catch(e){}
-    if(!res.ok||!data.ok)throw new Error(data.error||"Couldn't send the request.");
+    if(!res.ok||!data.ok)throw new Error(data.error||"Couldn't create the Premium request.");
+
+    const wf=data.web3forms||{};
+    if(!wf.message)throw new Error("Premium request was created, but the email notification details were missing.");
+    const web3Payload={
+      access_key:WEB3FORMS_KEY,
+      subject:wf.subject||("TradeCycle Premium request — "+(data.requestId||"")),
+      from_name:"TradeCycle Premium",
+      name:wf.name||"TradeCycle Premium",
+      email:wf.email||email,
+      replyto:wf.replyto||email,
+      message:wf.message
+    };
+    let mailRes;
+    try{
+      mailRes=await fetch("https://api.web3forms.com/submit",{
+        method:"POST",
+        headers:{"Content-Type":"application/json","Accept":"application/json"},
+        body:JSON.stringify(web3Payload)
+      });
+    }catch(mailNetworkError){
+      throw new Error("Your request was created, but Web3Forms could not be reached. Please try again.");
+    }
+    let mailData={};try{mailData=await mailRes.json();}catch(e){}
+    if(!mailRes.ok || mailData.success===false){
+      throw new Error((mailData&&mailData.message)||"Web3Forms could not send the request email.");
+    }
+
     await storageSet(PREMIUM_REQUEST_TOKEN_KEY,String(data.clientToken||""));
     await storageSet(PREMIUM_REQUEST_ID_KEY,String(data.requestId||""));
     await storageSet(PREMIUM_EMAIL_KEY,email.trim().toLowerCase());
