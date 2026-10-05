@@ -64,29 +64,6 @@ async function formSubmitStandard(fields) {
   return true;
 }
 
-async function notifyAdmin(email, id, approval, denial) {
-  const fields = {
-    name: "TradeCycle Premium",
-    email: email,
-    _replyto: email,
-    _subject: "TradeCycle Premium request — " + id,
-    message:
-      "TRADECYCLE PREMIUM REQUEST\n\n" +
-      "Request ID: " + id + "\n" +
-      "Customer email: " + email + "\n" +
-      "Amount: $4.99\n" +
-      "Plan: Premium — 30 days\n\n" +
-      "FIRST: Check Buy Me a Coffee and confirm the $4.99 payment.\n\n" +
-      "APPROVE: " + approval + "\n\n" +
-      "DENY: " + denial
-  };
-  try {
-    await formSubmitAjax(fields);
-  } catch (firstError) {
-    await formSubmitStandard(fields);
-  }
-}
-
 async function sendCustomerResult(email, subject, message) {
   const fields = {
     name: "TradeCycle Premium",
