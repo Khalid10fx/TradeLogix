@@ -196,7 +196,7 @@ jobs:
           name: TradeCycle-Windows
           path: TradeCycleDesktop\dist\TradeCycle-Setup.exe
   release:
-    needs: [android, windows]
+    needs: [android, windows, package]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v4
