@@ -207,7 +207,12 @@ jobs:
         with:
           name: TradeCycle-Windows
           path: release-assets
+      - uses: actions/download-artifact@v4
+        with:
+          name: TradeCycle-LATEST-CLEAN-ORIGINAL-LAYOUT
+          path: package-artifact
       - name: Rename release files
+
         run: |
           mv release-assets/app-debug.apk release-assets/TradeCycle.apk
           ls -lh release-assets
@@ -220,6 +225,7 @@ jobs:
           files: |
             release-assets/TradeCycle.apk
             release-assets/TradeCycle-Setup.exe
+            package-artifact/TradeCycle-LATEST-CLEAN-ORIGINAL-LAYOUT.zip
 
   package:
     needs: [prepare, android, windows]
