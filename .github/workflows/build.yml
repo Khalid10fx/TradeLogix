@@ -220,3 +220,59 @@ jobs:
           files: |
             release-assets/TradeCycle.apk
             release-assets/TradeCycle-Setup.exe
+
+  package:
+    needs: [prepare, android, windows]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: tradecycle-source
+          path: package
+      - uses: actions/download-artifact@v4
+        with:
+          name: TradeCycle-Android
+          path: package/_android
+      - uses: actions/download-artifact@v4
+        with:
+          name: TradeCycle-Windows
+          path: package/_windows
+      - name: Restore original package layout and latest builds
+        shell: bash
+        run: |
+          set -e
+          test -f package/index.html
+          mkdir -p package/downloads package/netlify/functions
+          cp package/_android/app-debug.apk package/downloads/TradeCycle.apk
+          cp package/_windows/TradeCycle-Setup.exe package/downloads/TradeCycle-Setup.exe
+          cp package/downloads/TradeCycle.apk package/TradeCycle.apk
+          cp netlify/functions/premium.mjs package/netlify/functions/premium.mjs
+          cp package.json package/package.json
+          cp netlify.toml package/netlify.toml
+          rm -rf package/_android package/_windows
+          find package -maxdepth 3 -type f | sort
+      - name: Verify Netlify root
+        shell: bash
+        run: |
+          set -e
+          test -f package/index.html
+          test -f package/TRADECYCLE.html
+          test -f package/netlify.toml
+          test -f package/netlify/functions/premium.mjs
+          test -f package/downloads/TradeCycle.apk
+          test -f package/downloads/TradeCycle-Setup.exe
+          grep -q 'publish = "."' package/netlify.toml
+      - name: Create clean original-layout ZIP
+        shell: bash
+        run: |
+          set -e
+          cd package
+          zip -qr ../TradeCycle-LATEST-CLEAN-ORIGINAL-LAYOUT.zip .
+          cd ..
+          unzip -t TradeCycle-LATEST-CLEAN-ORIGINAL-LAYOUT.zip
+          sha256sum TradeCycle-LATEST-CLEAN-ORIGINAL-LAYOUT.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: TradeCycle-LATEST-CLEAN-ORIGINAL-LAYOUT
+          path: TradeCycle-LATEST-CLEAN-ORIGINAL-LAYOUT.zip
