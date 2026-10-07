@@ -1,0 +1,170 @@
+name: Build APK and EXE
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, master]
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      md5: ${{ steps.app.outputs.md5 }}
+    steps:
+      - name: Download the deployed final app
+        id: app
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fL --retry 3 https://tradecycle3.netlify.app/app/index.html -o TRADECYCLE.html
+          md5sum TRADECYCLE.html
+          MD5=$(md5sum TRADECYCLE.html | awk '{print $1}')
+          test "$MD5" = "6aaeed37942f1f18ceb77b9ae94ce903" || {
+            echo "ERROR: live Netlify app is NOT the final tested HTML."
+            echo "Expected: 6aaeed37942f1f18ceb77b9ae94ce903"
+            echo "Got:      $MD5"
+            exit 1
+          }
+          echo "md5=$MD5" >> "$GITHUB_OUTPUT"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: final-html
+          path: TRADECYCLE.html
+
+  windows-exe:
+    needs: prepare
+    runs-on: windows-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: final-html
+          path: desktop
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Create build-only Electron wrapper
+        shell: pwsh
+        run: |
+          @'
+          {
+            "name": "tradecycle-desktop-build",
+            "version": "1.0.0",
+            "private": true,
+            "main": "main.cjs",
+            "scripts": { "build": "electron-builder --win nsis --publish never" },
+            "devDependencies": { "electron": "latest", "electron-builder": "latest" },
+            "build": {
+              "appId": "com.tradecycle.app",
+              "productName": "TradeCycle",
+              "files": ["main.cjs", "TRADECYCLE.html"],
+              "win": { "target": "nsis", "artifactName": "TradeCycle-Setup.exe" },
+              "nsis": { "oneClick": false, "perMachine": false, "allowToChangeInstallationDirectory": true }
+            }
+          }
+          '@ | Set-Content desktop/package.json -Encoding UTF8
+          @'
+          const { app, BrowserWindow } = require("electron");
+          const path = require("path");
+          function createWindow() {
+            const win = new BrowserWindow({ width: 1400, height: 900, webPreferences: { contextIsolation: true } });
+            win.loadFile(path.join(__dirname, "TRADECYCLE.html"));
+          }
+          app.whenReady().then(() => { createWindow(); app.on("activate", () => { if (BrowserWindow.getAllWindows().length === 0) createWindow(); }); });
+          app.on("window-all-closed", () => { if (process.platform !== "darwin") app.quit(); });
+          '@ | Set-Content desktop/main.cjs -Encoding UTF8
+      - name: Build installer
+        working-directory: desktop
+        shell: pwsh
+        run: |
+          npm install
+          npm run build
+      - name: Verify installer contains final HTML
+        shell: pwsh
+        run: |
+          $exe = "desktop/dist/TradeCycle-Setup.exe"
+          if (!(Test-Path $exe)) { throw "Installer not found" }
+          npx --yes @electron/asar extract desktop/dist/win-unpacked/resources/app.asar asar-check
+          $a = (Get-FileHash asar-check/TRADECYCLE.html -Algorithm MD5).Hash.ToLower()
+          $b = (Get-FileHash desktop/TRADECYCLE.html -Algorithm MD5).Hash.ToLower()
+          if ($a -ne $b) { throw "EXE contains different HTML: $a vs $b" }
+          Write-Host "PASS: EXE contains final HTML $a"
+          Copy-Item $exe TradeCycle-Setup.exe
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows-exe
+          path: TradeCycle-Setup.exe
+
+  android-apk:
+    needs: prepare
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: final-html
+          path: source
+      - uses: actions/checkout@v4
+      - name: Recover the old APK wrapper from the previous build artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          curl -fsSL -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/artifacts/11400193273/zip" -o old-artifact.zip
+          mkdir -p old-artifact
+          unzip -q old-artifact.zip -d old-artifact
+          find old-artifact -name 'TradeCycle.apk' -print -quit
+          APK=$(find old-artifact -name 'TradeCycle.apk' -print -quit)
+          test -n "$APK"
+          cp "$APK" base.apk
+      - name: Replace HTML and re-sign APK
+        env:
+          KS_B64: ${{ secrets.ANDROID_KEYSTORE_B64 }}
+          KS_PASS: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KS_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+        run: |
+          set -euo pipefail
+          BT=$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -1)
+          zip -d base.apk 'META-INF/*' || true
+          mkdir -p assets
+          cp source/TRADECYCLE.html assets/TRADECYCLE.html
+          zip -X base.apk assets/TRADECYCLE.html
+          $BT/zipalign -p -f 4 base.apk aligned.apk
+          if [ -n "${KS_B64:-}" ]; then
+            echo "$KS_B64" | base64 -d > tc.jks
+            PASS="$KS_PASS"; ALIAS="$KS_ALIAS"
+          else
+            PASS=tradecycle123; ALIAS=tradecycle
+            keytool -genkeypair -keystore tc.jks -storepass "$PASS" -keypass "$PASS" -alias "$ALIAS" -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=TradeCycle"
+          fi
+          $BT/apksigner sign --ks tc.jks --ks-pass pass:"$PASS" --ks-key-alias "$ALIAS" --out TradeCycle.apk aligned.apk
+          $BT/apksigner verify --verbose TradeCycle.apk
+          mkdir chk
+          unzip -q TradeCycle.apk assets/TRADECYCLE.html -d chk
+          test "$(md5sum < chk/assets/TRADECYCLE.html)" = "$(md5sum < source/TRADECYCLE.html)"
+          echo "PASS: APK contains final HTML"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: android-apk
+          path: TradeCycle.apk
+
+  publish-artifacts:
+    needs: [windows-exe, android-apk]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: built
+      - name: Publish final build bundle
+        run: |
+          mkdir -p release/downloads
+          cp built/windows-exe/TradeCycle-Setup.exe release/downloads/
+          cp built/android-apk/TradeCycle.apk release/downloads/
+          (cd release && zip -r ../TradeCycle-BUILT-BINARIES.zip downloads)
+      - uses: actions/upload-artifact@v4
+        with:
+          name: TradeCycle-BUILT-BINARIES
+          path: TradeCycle-BUILT-BINARIES.zip
