@@ -13,20 +13,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Extract project archive
+      - name: Fetch the final deployed TradeCycle app
+        shell: bash
         run: |
+          set -euo pipefail
           rm -rf web-content
-          mkdir -p web-content
-          unzip -q khalid-journal-app.zip -d web-content
-          find web-content -type f -iname 'TRADECYCLE.html' -delete
-          cp TRADECYCLE.html web-content/TRADECYCLE.html
           mkdir -p web-content/app
-          cp TRADECYCLE.html web-content/app/index.html
-          if [ -n "${{ secrets.WEB3FORMS_KEY }}" ]; then
-            sed -i "s|__WEB3FORMS_KEY__|${{ secrets.WEB3FORMS_KEY }}|g" web-content/TRADECYCLE.html
-            sed -i "s|__WEB3FORMS_KEY__|${{ secrets.WEB3FORMS_KEY }}|g" web-content/app/index.html
-          fi
-          find web-content -type f | head -100
+          curl -fL --retry 3 https://tradecycle3.netlify.app/app/index.html -o web-content/TRADECYCLE.html
+          cp web-content/TRADECYCLE.html web-content/app/index.html
+          MD5=$(md5sum web-content/TRADECYCLE.html | awk '{print $1}')
+          echo "Final HTML MD5: $MD5"
+          test "$MD5" = "6aaeed37942f1f18ceb77b9ae94ce903"
+          cp web-content/TRADECYCLE.html web-content/index.html
+          cp web-content/TRADECYCLE.html web-content/downloads.html
       - uses: actions/upload-artifact@v4
         with:
           name: tradecycle-source
