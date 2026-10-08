@@ -16,16 +16,17 @@ jobs:
     outputs:
       md5: ${{ steps.app.outputs.md5 }}
     steps:
-      - name: Download the deployed final app
+      - uses: actions/checkout@v4
+      - name: Load the final tested app from the repository
         id: app
         shell: bash
         run: |
           set -euo pipefail
-          curl -fL --retry 3 https://tradecycle3.netlify.app/app/index.html -o TRADECYCLE.html
+          cp app/index.html TRADECYCLE.html
           md5sum TRADECYCLE.html
           MD5=$(md5sum TRADECYCLE.html | awk '{print $1}')
           test "$MD5" = "6aaeed37942f1f18ceb77b9ae94ce903" || {
-            echo "ERROR: live Netlify app is NOT the final tested HTML."
+            echo "ERROR: repository app/index.html is NOT the final tested HTML."
             echo "Expected: 6aaeed37942f1f18ceb77b9ae94ce903"
             echo "Got:      $MD5"
             exit 1
