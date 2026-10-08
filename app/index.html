@@ -1304,7 +1304,8 @@ input:focus,select:focus,textarea:focus{
       </div>
       <div style="font-size:12px; color:var(--text); line-height:1.8; margin-bottom:14px;">
         <b>1.</b> Tap below and send $4.99<br>
-        <b>2.</b> Enter your email and request your unlock code
+        <b>2.</b> Enter the email you paid with and request your code<br>
+        <b>3.</b> I check the payment and send your one-time code
       </div>
       <a href="https://buymeacoffee.com/yayazheyv" target="_blank" style="display:block; text-decoration:none;">
         <button class="btn-primary" style="width:100%; justify-content:center; margin-bottom:14px;">☕ Pay $4.99 on Buy Me a Coffee</button>
@@ -1316,7 +1317,7 @@ input:focus,select:focus,textarea:focus{
 
     <div id="removeAdsStep2" style="display:none;">
       <div style="font-size:12px; color:var(--muted); line-height:1.6; margin-bottom:14px;">
-        Request sent! Once Khalid confirms your payment, he'll send you a code. Enter your email and that code below.
+        Request sent! Check your email after your payment is checked. Khalid will send your one-time code. Enter your email and code below.
       </div>
       <input type="email" id="adUnlockEmailInput" placeholder="Email you paid with" autocomplete="off">
       <input type="text" id="adUnlockCodeInput" placeholder="Unlock code" autocomplete="off">
@@ -1740,7 +1741,7 @@ document.getElementById("removeAdsDrawerItem").addEventListener("click", async (
     document.getElementById("removeAdsStep2").style.display = "block";
     document.getElementById("adUnlockCodeInput").value = "";
     document.getElementById("adUnlockError").textContent = "Checking your Premium request...";
-    startPremiumPolling(token);
+    document.getElementById("adUnlockError").textContent="Your request is saved. Enter the one-time code Khalid sends after checking your payment.";
   }else{
     document.getElementById("removeAdsStep1").style.display = "block";
     document.getElementById("removeAdsStep2").style.display = "none";
@@ -1759,37 +1760,8 @@ function stopPremiumPolling(){
   if(premiumPollTimer){ clearInterval(premiumPollTimer); premiumPollTimer=null; }
 }
 
-async function pollPremiumRequest(clientToken){
-  if(!clientToken)return;
-  const errEl=document.getElementById("adUnlockError");
-  try{
-    const res=await fetch(premiumApiUrl("status"),{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({clientToken})});
-    let data={};try{data=await res.json();}catch(e){}
-    if(!res.ok||!data.ok) return;
-    if(data.status==="pending"){
-      errEl.textContent="Request "+(data.requestId||"")+" is waiting for payment approval.";
-      return;
-    }
-    if(data.status==="denied"){
-      stopPremiumPolling();
-      try{ await storageDelete(PREMIUM_REQUEST_TOKEN_KEY); await storageDelete(PREMIUM_REQUEST_ID_KEY); }catch(e){}
-      errEl.textContent="Your payment could not be confirmed. You can request Premium again after checking your payment.";
-      return;
-    }
-    if(data.status==="approved" && data.code){
-      stopPremiumPolling();
-      document.getElementById("adUnlockCodeInput").value=data.code;
-      errEl.textContent="Payment approved. Your one-time code was generated automatically. Click Unlock Premium.";
-    }
-  }catch(e){}
-}
-
-async function startPremiumPolling(clientToken){
-  stopPremiumPolling();
-  if(!clientToken)return;
-  await pollPremiumRequest(clientToken);
-  premiumPollTimer=setInterval(()=>pollPremiumRequest(clientToken),4000);
-}
+async function pollPremiumRequest(clientToken){ return; }
+async function startPremiumPolling(clientToken){ stopPremiumPolling(); }
 
 document.getElementById("adReqSendBtn").addEventListener("click", async ()=>{
   if(isSendingAdRequest)return;
@@ -1807,11 +1779,7 @@ document.getElementById("adReqSendBtn").addEventListener("click", async ()=>{
     // Backup notification: if the server could not email the admin, send it from this device (Web3Forms works from browsers).
     // It never blocks or fails the request - the request is already saved on the server and visible on the admin page.
     if(data.emailed===false){
-      try{
-        fetch("https://api.web3forms.com/submit",{method:"POST",headers:{"Content-Type":"application/json","Accept":"application/json"},
-          body:JSON.stringify({access_key:"7136c2e1-07a3-4eaf-b57d-1e7349d14878",subject:"TradeCycle Premium request - "+(data.requestId||""),from_name:"TradeCycle Premium",replyto:email,
-            message:"NEW TRADECYCLE PREMIUM REQUEST\n\nRequest ID: "+(data.requestId||"")+"\nCustomer email: "+email+"\nAmount: $4.99 / 30 days\n\n1) Check Buy Me a Coffee for the $4.99 payment.\n2) Open https://tradecycle3.netlify.app/api/premium/admin?key=YOUR_ADMIN_KEY and press Approve or Deny."})}).catch(function(){});
-      }catch(mailErr){}
+      errEl.textContent="Request saved, but the notification email could not be sent. Please contact support with request "+(data.requestId||"")+"."; 
     }
     await storageSet(PREMIUM_REQUEST_TOKEN_KEY,String(data.clientToken||""));
     await storageSet(PREMIUM_REQUEST_ID_KEY,String(data.requestId||""));
@@ -1822,15 +1790,14 @@ document.getElementById("adReqSendBtn").addEventListener("click", async ()=>{
     document.getElementById("adUnlockCodeInput").value="";
     document.getElementById("adUnlockError").textContent="Request "+(data.requestId||"")+" sent. Waiting for payment approval...";
     document.getElementById("adUnlockCodeInput").focus();
-    startPremiumPolling(String(data.clientToken||""));
-  }catch(e){errEl.textContent=e.message||"Couldn't send the request. Please try again.";}
+      }catch(e){errEl.textContent=e.message||"Couldn't send the request. Please try again.";}
   finally{isSendingAdRequest=false;btn.disabled=false;btn.textContent=oldText;}
 });
 
 document.getElementById("adUnlockBtn").addEventListener("click", async ()=>{
   const errEl=document.getElementById("adUnlockError"),email=document.getElementById("adUnlockEmailInput").value.trim(),entered=document.getElementById("adUnlockCodeInput").value.trim().toUpperCase();
   if(!email){errEl.textContent="Enter the email you paid with.";return;}
-  if(!entered){errEl.textContent="Your code will appear automatically after payment approval.";return;}
+  if(!entered){errEl.textContent="Enter the one-time code sent after your payment is checked.";return;}
   errEl.textContent="";
   try{
     const expiry=await activatePremiumFromServer(email,entered);
@@ -1855,7 +1822,7 @@ document.getElementById("adUnlockBtn").addEventListener("click", async ()=>{
       document.getElementById("adUnlockEmailInput").value=emailRes && emailRes.value ? emailRes.value : "";
       document.getElementById("removeAdsStep1").style.display="none";
       document.getElementById("removeAdsStep2").style.display="block";
-      startPremiumPolling(token);
+      document.getElementById("adUnlockError").textContent="Your request is saved. Enter the one-time code Khalid sends after checking your payment.";
     }
   }catch(e){}
 })();
