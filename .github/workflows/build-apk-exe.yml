@@ -103,24 +103,75 @@ jobs:
           name: final-html
           path: source
       - uses: actions/checkout@v4
-      - name: Recover the APK wrapper from the repository
-        run: |
-          set -euo pipefail
-          test -f downloads/TradeCycle.apk
-          cp downloads/TradeCycle.apk base.apk
-      - name: Replace HTML and re-sign APK
+      - name: Build a fresh Android WebView wrapper
         env:
           KS_B64: ${{ secrets.ANDROID_KEYSTORE_B64 }}
           KS_PASS: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           KS_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
         run: |
           set -euo pipefail
-          BT=$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -1)
-          zip -d base.apk 'META-INF/*' || true
-          mkdir -p assets
-          cp source/TRADECYCLE.html assets/TRADECYCLE.html
-          zip -X base.apk assets/TRADECYCLE.html
-          $BT/zipalign -p -f 4 base.apk aligned.apk
+          mkdir -p android/app/src/main/java/com/tradecycle/app android/app/src/main/assets
+          cp source/TRADECYCLE.html android/app/src/main/assets/TRADECYCLE.html
+          cat > android/settings.gradle <<'EOF'
+          pluginManagement { repositories { google(); mavenCentral(); gradlePluginPortal() } }
+          dependencyResolutionManagement { repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS); repositories { google(); mavenCentral() } }
+          rootProject.name='TradeCycleBuild'
+          include ':app'
+          EOF
+          cat > android/build.gradle <<'EOF'
+          plugins {
+            id 'com.android.application' version '8.7.3' apply false
+          }
+          EOF
+          cat > android/app/build.gradle <<'EOF'
+          plugins { id 'com.android.application' }
+          android { namespace 'com.tradecycle.app'; compileSdk 35
+            defaultConfig { applicationId 'com.tradecycle.app'; minSdk 23; targetSdk 35; versionCode 1; versionName '1.0' }
+          }
+          EOF
+          cat > android/app/src/main/AndroidManifest.xml <<'EOF'
+          <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+            <uses-permission android:name="android.permission.INTERNET"/>
+            <application android:theme="@style/AppTheme" android:label="TradeCycle" android:usesCleartextTraffic="true">
+              <activity android:name=".MainActivity" android:exported="true">
+                <intent-filter>
+                  <action android:name="android.intent.action.MAIN"/>
+                  <category android:name="android.intent.category.LAUNCHER"/>
+                </intent-filter>
+              </activity>
+            </application>
+          </manifest>
+          EOF
+          mkdir -p android/app/src/main/res/values
+          cat > android/app/src/main/res/values/styles.xml <<'EOF'
+          <resources><style name="AppTheme" parent="android:style/Theme.Material.Light.NoActionBar"><item name="android:fontFamily">sans</item><item name="android:windowActionModeOverlay">true</item></style></resources>
+          EOF
+          cat > android/app/src/main/java/com/tradecycle/app/MainActivity.java <<'EOF'
+          package com.tradecycle.app;
+          import android.app.Activity;
+          import android.os.Bundle;
+          import android.webkit.WebSettings;
+          import android.webkit.WebView;
+          import android.webkit.WebViewClient;
+          public class MainActivity extends Activity {
+            public void onCreate(Bundle b) {
+              super.onCreate(b);
+              WebView w=new WebView(this);
+              w.setWebViewClient(new WebViewClient());
+              WebSettings s=w.getSettings();
+              s.setJavaScriptEnabled(true);
+              s.setDomStorageEnabled(true);
+              s.setAllowFileAccess(true);
+              s.setAllowContentAccess(true);
+              w.loadUrl("file:///android_asset/TRADECYCLE.html");
+              setContentView(w);
+            }
+          }
+          EOF
+          cd android
+          gradle --no-daemon assembleRelease
+          cd ..
+          cp android/app/build/outputs/apk/release/app-release-unsigned.apk unsigned.apk
           if [ -n "${KS_B64:-}" ]; then
             echo "$KS_B64" | base64 -d > tc.jks
             PASS="$KS_PASS"; ALIAS="$KS_ALIAS"
@@ -128,12 +179,14 @@ jobs:
             PASS=tradecycle123; ALIAS=tradecycle
             keytool -genkeypair -keystore tc.jks -storepass "$PASS" -keypass "$PASS" -alias "$ALIAS" -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=TradeCycle"
           fi
+          BT=$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -1)
+          $BT/zipalign -p -f 4 unsigned.apk aligned.apk
           $BT/apksigner sign --ks tc.jks --ks-pass pass:"$PASS" --ks-key-alias "$ALIAS" --out TradeCycle.apk aligned.apk
           $BT/apksigner verify --verbose TradeCycle.apk
           mkdir chk
           unzip -q TradeCycle.apk assets/TRADECYCLE.html -d chk
           test "$(md5sum < chk/assets/TRADECYCLE.html)" = "$(md5sum < source/TRADECYCLE.html)"
-          echo "PASS: APK contains final HTML"
+          echo "PASS: APK contains build source"
       - uses: actions/upload-artifact@v4
         with:
           name: android-apk
