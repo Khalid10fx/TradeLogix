@@ -64,122 +64,73 @@ async function formSubmitStandard(fields) {
   return true;
 }
 
-async function sendCustomerResult(email, subject, message) {
-  const fields = {
+async function notifyAdmin(email, id, code) {
+  await formSubmitAjax({
     name: "TradeCycle Premium",
     email: email,
-    _replyto: ADMIN_EMAIL,
-    _subject: subject,
-    _autoresponse: message,
-    message: message
-  };
-  try {
-    await formSubmitStandard(fields);
-  } catch (e) {
-    console.error("TradeCycle customer email error", e);
-  }
+    _replyto: email,
+    _subject: "TradeCycle Premium request — " + id,
+    message:
+      "TRADECYCLE PREMIUM REQUEST\n\n" +
+      "Request ID: " + id + "\n" +
+      "Customer email: " + email + "\n" +
+      "Amount: $4.99\n" +
+      "Plan: Premium — 30 days\n\n" +
+      "CHECK BUY ME A COFFEE FIRST. If the $4.99 payment is confirmed, send this one-time code to the customer:\n\n" +
+      code + "\n\n" +
+      "The code can be used once. Premium lasts 30 days. If payment is not confirmed, do not send the code. No admin link or ADMIN_KEY is required."
+  });
 }
+
+async function sendCustomerResult
 
 async function requestPremium(body, req) {
   const email = emailOf(body && body.email);
   if (!validEmail(email)) return json({ok:false,error:"Enter a valid email address."},400);
 
   const id = requestId();
-  const adminToken = randomHex(32);
   const clientToken = randomHex(32);
-  const adminKey = "pending-admin/" + await sha256(adminToken);
+  const adminKey = "pending-admin/" + await sha256(clientToken);
   const clientKey = "pending-client/" + await sha256(clientToken);
   const now = Date.now();
-  const site = process.env.URL || new URL(req.url).origin;
-  const approval = site + "/api/premium/approve?token=" + encodeURIComponent(adminToken) + "&decision=approve";
-  const denial = site + "/api/premium/approve?token=" + encodeURIComponent(adminToken) + "&decision=deny";
+  const code = premiumCode();
+  const codeKey = "codes/" + await sha256(code);
+
+  const codeCreated = await store.setJSON(codeKey,{email:email,requestId:id,issuedAt:now,used:false,code:code},{onlyIfNew:true});
+  if (!codeCreated.modified) return json({ok:false,error:"Please try again."},500);
 
   const record = {
     requestId:id,
     email:email,
     createdAt:now,
-    status:"pending",
-    clientTokenHash:await sha256(clientToken)
+    status:"issued",
+    clientTokenHash:await sha256(clientToken),
+    codeKey:codeKey,
+    code:code
   };
 
   const created = await store.setJSON(adminKey,record,{onlyIfNew:true});
-  if (!created.modified) return json({ok:false,error:"Please try again."},500);
+  if (!created.modified) {
+    await store.delete(codeKey);
+    return json({ok:false,error:"Please try again."},500);
+  }
   await store.setJSON(clientKey,{requestId:id,adminKey:adminKey},{onlyIfNew:true});
 
+  let emailed = true;
   try {
-    await notifyAdmin(email,id,approval,denial);
+    await notifyAdmin(email,id,code);
   } catch (e) {
-    await store.delete(adminKey);
-    await store.delete(clientKey);
-    throw e;
+    emailed = false;
+    console.error("TradeCycle Premium email failed; request and code remain stored",e);
   }
 
   return json({
     ok:true,
     requestId:id,
     clientToken:clientToken,
-    message:"Request received. We will check your $4.99 payment and approve or deny the request."
+    emailed:emailed,
+    message:"Request received. Check Buy Me a Coffee. If payment is confirmed, send the customer the one-time code from the Premium request email."
   });
-}
-
-async function approve(token, decision, req) {
-  if (!token) return page("<h1>Invalid approval link</h1><p class=\"muted\">This link is invalid.</p>",400);
-
-  const key = "pending-admin/" + await sha256(token);
-  const got = await store.getWithMetadata(key,{type:"json"});
-  if (!got || !got.data) return page("<h1>Request not found</h1><p class=\"muted\">This request was already processed or the link is invalid.</p>",404);
-
-  const current = got.data;
-  if (current.status !== "pending") {
-    if (current.status === "issued") {
-      return page("<h1>Already approved</h1><p class=\"muted\">This request already has a Premium code.</p><code>" + current.code + "</code>",409);
-    }
-    if (current.status === "denied") return page("<h1>Already denied</h1><p class=\"muted\">This request was already denied.</p>",409);
-    return page("<h1>Already processed</h1><p class=\"muted\">This request has already been processed.</p>",409);
-  }
-
-  const site = process.env.URL || new URL(req.url).origin;
-
-  if (decision === "deny") {
-    const denied = {...current,status:"denied",deniedAt:Date.now()};
-    const write = await store.setJSON(key,denied,{onlyIfMatch:got.etag});
-    if (!write.modified) return page("<h1>Already processed</h1><p class=\"muted\">This request was processed by another click.</p>",409);
-    await sendCustomerResult(current.email,"TradeCycle Premium request denied","Your TradeCycle Premium request was denied because the $4.99 payment could not be confirmed. If you believe this is a mistake, please contact TradeCycle support.");
-    return page("<h1>Premium request denied</h1><p class=\"muted\">The customer has been notified. No Premium code was created.</p>");
-  }
-
-  if (decision !== "approve") return page("<h1>Invalid decision</h1><p class=\"muted\">Use the approve or deny link from the request email.</p>",400);
-
-  const code = premiumCode();
-  const codeKey = "codes/" + await sha256(code);
-  const now = Date.now();
-
-  const issued = {
-    ...current,
-    status:"issued",
-    issuedAt:now,
-    codeKey:codeKey,
-    code:code,
-    emailSent:false
-  };
-
-  const codeCreated = await store.setJSON(codeKey,{email:current.email,requestId:current.requestId,issuedAt:now,used:false,code:code},{onlyIfNew:true});
-  if (!codeCreated.modified) return page("<h1>Please try again</h1><p class=\"muted\">A unique code could not be created. No customer access was changed.</p>",500);
-
-  const write = await store.setJSON(key,issued,{onlyIfMatch:got.etag});
-  if (!write.modified) {
-    await store.delete(codeKey);
-    return page("<h1>Already processed</h1><p class=\"muted\">This request was processed by another click.</p>",409);
-  }
-
-  await sendCustomerResult(
-    current.email,
-    "Your TradeCycle Premium code — 30 days",
-    "Your TradeCycle Premium payment was approved.\n\nYour one-time TradeCycle Premium code is:\n\n" + code + "\n\nEnter this code in TradeCycle with the same email you used for payment. Premium lasts 30 days. Your journal data is never deleted when Premium expires."
-  );
-
-  await store.setJSON(key,{...issued,emailSent:true,emailSentAt:Date.now()},{onlyIfNew:false});
-  return page("<h1>Premium approved</h1><p class=\"muted\"><b>Customer:</b> " + current.email + "<br><b>Request:</b> " + current.requestId + "</p><code>" + code + "</code><p class=\"muted\">The one-time code was generated on the server and the customer was sent the code automatically. Premium lasts 30 days.</p>");
 }
 
 async function status(body) {
@@ -196,7 +147,7 @@ async function status(body) {
   const r = got.data;
   if (r.status === "pending") return json({ok:true,status:"pending",requestId:r.requestId});
   if (r.status === "denied") return json({ok:true,status:"denied",requestId:r.requestId});
-  if (r.status === "issued") return json({ok:true,status:"approved",requestId:r.requestId,code:r.code});
+  if (r.status === "issued") return json({ok:true,status:"issued",requestId:r.requestId});
 
   return json({ok:true,status:r.status,requestId:r.requestId});
 }
@@ -249,10 +200,6 @@ export default async function(req, context) {
     if (action === "request" && req.method === "POST") return requestPremium(await req.json(),req);
     if (action === "status" && req.method === "POST") return status(await req.json());
     if (action === "activate" && req.method === "POST") return activate(await req.json());
-    if (action === "approve" && req.method === "GET") {
-      const url = new URL(req.url);
-      return approve(url.searchParams.get("token"),url.searchParams.get("decision"),req);
-    }
     return json({ok:false,error:"Not found"},404);
   } catch (e) {
     console.error("TradeCycle premium error",e);
