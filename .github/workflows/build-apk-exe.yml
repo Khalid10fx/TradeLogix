@@ -22,7 +22,11 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cp app/index.html TRADECYCLE.html
+          python3 - <<'PY'
+from pathlib import Path
+p=Path("app/index.html").read_bytes()
+Path("TRADECYCLE.html").write_bytes(p.replace(b"\r\n", b"\n").replace(b"\n", b"\r\n"))
+PY
           md5sum TRADECYCLE.html
           MD5=$(md5sum TRADECYCLE.html | awk '{print $1}')
           test "$MD5" = "6aaeed37942f1f18ceb77b9ae94ce903" || {
