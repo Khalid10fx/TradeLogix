@@ -517,8 +517,6 @@ input:focus,select:focus,textarea:focus{
 </style>
 </head>
 <body>
-<form name="premium-request" method="POST" data-netlify="true" netlify-honeypot="bot-field" hidden><input type="hidden" name="form-name" value="premium-request"><input type="text" name="bot-field"><input type="email" name="email"><input type="text" name="unlock_code"></form>
-
 <div id="tcConsentOverlay">
   <div class="tc-consent-card">
     <div class="tc-consent-brand">TRADECYCLE</div>
@@ -558,7 +556,7 @@ input:focus,select:focus,textarea:focus{
       <p><b>6. Password lock.</b> The optional TradeCycle password lock is a client-side convenience feature. It is not a secure account system, encryption layer or guarantee that a technically skilled person cannot bypass access. Do not rely on it as the only protection for confidential information.</p>
       <p><b>7. CSV and broker data.</b> You may import data from brokers, trading platforms and prop firms where you have the right to do so. You are responsible for complying with those providers' terms. The current Broker Connect interface is marked as coming soon; no promise is made that a particular broker integration is currently available.</p>
       <p><b>8. Third-party services.</b> TradeCycle may link to or use third-party services for payments, advertising, email/form processing, market data or future integrations. Those services are governed by their own terms and policies. TradeCycle is not responsible for third-party outages, content, policies, security incidents or service changes.</p>
-      <p><b>9. Premium.</b> TradeCycle currently presents Premium as a $4.99 30-day subscription. Premium access expires after 30 days, while journal data remains stored on the device. Premium access, features and payment handling may change as the product develops. Payment is processed through the payment destination shown in the app; TradeCycle does not request or store your card number inside the journal. Any applicable payment/refund terms shown by the payment provider also apply.</p>
+      <p><b>9. Premium.</b> TradeCycle currently presents a one-time $4.99 Premium/ad-removal purchase flow. Premium access, features and payment handling may change as the product develops. Payment is processed through the payment destination shown in the app; TradeCycle does not request or store your card number inside the journal. Any applicable payment/refund terms shown by the payment provider also apply.</p>
       <p><b>10. Acceptable use.</b> Do not use TradeCycle to break the law, violate another person's rights, distribute malicious code, interfere with the app or its services, abuse third-party services, or submit information you do not have permission to process. Do not use the app as a substitute for professional financial, legal or tax advice.</p>
       <p><b>11. Intellectual property.</b> TradeCycle's software, branding, interface, original text, graphics and other product materials are protected by applicable intellectual-property laws. Except where applicable law or a separate license permits it, you may not copy, resell, redistribute, reverse-engineer or commercially exploit the product or its protected materials without permission.</p>
       <p><b>12. Availability and changes.</b> Features may be added, removed, changed, suspended or discontinued. TradeCycle may contain bugs or depend on browsers, operating systems, networks and third-party services that are outside its control.</p>
@@ -694,7 +692,7 @@ input:focus,select:focus,textarea:focus{
         <div style="font-size:28px; margin-bottom:6px;">🔒</div>
         <div style="font-size:13px; font-weight:700; margin-bottom:4px;">Stats are Premium</div>
         <div style="font-size:11px; color:var(--muted); margin-bottom:12px; max-width:220px;">Win rate, R-multiples, and your equity curve — unlock to see how you're actually doing.</div>
-        <button class="btn-primary" id="homeUnlockBtn">⭐ Unlock Premium — $5</button>
+        <button class="btn-primary" id="homeUnlockBtn">⭐ Unlock Premium — $4.99</button>
       </div>
     </div>
     <div class="panel" id="goalPanel">
@@ -802,7 +800,7 @@ input:focus,select:focus,textarea:focus{
         <div style="font-size:32px; margin-bottom:8px;">🔒</div>
         <div style="font-size:13px; font-weight:700; margin-bottom:6px;">Replay Chart is Premium</div>
         <div style="font-size:12px; color:var(--muted); margin-bottom:16px; line-height:1.5;">Real historical charts, Buy/Sell with auto stop/target, virtual account — practice like it's live.</div>
-        <button class="btn-primary" id="chartUnlockBtn" style="width:100%; justify-content:center;">⭐ Unlock Premium — $5</button>
+        <button class="btn-primary" id="chartUnlockBtn" style="width:100%; justify-content:center;">⭐ Unlock Premium — $4.99</button>
       </div>
       <div id="chartUnlocked">
       <div class="panel">
@@ -904,7 +902,7 @@ input:focus,select:focus,textarea:focus{
       <div style="font-size:34px;margin-bottom:8px;">🔒</div>
       <div style="font-size:14px;font-weight:800;margin-bottom:7px;">Broker Connection is Premium</div>
       <div style="font-size:11px;color:var(--muted);line-height:1.6;margin-bottom:15px;">Unlock Premium to connect your broker and use automatic trade-sync features.</div>
-      <button class="btn-primary" id="brokerUnlockBtn" style="width:100%;justify-content:center;">⭐ Unlock Premium — $5</button>
+      <button class="btn-primary" id="brokerUnlockBtn" style="width:100%;justify-content:center;">⭐ Unlock Premium — $4.99</button>
     </div>
     <div id="brokerUnlockedPanel" style="display:none;">
       <div class="broker-card">
@@ -999,8 +997,7 @@ input:focus,select:focus,textarea:focus{
           <button class="broker-choice" data-broker="Hola Prime" data-category="prop"><b>Hola Prime</b><small>CFD prop account</small><span class="broker-connect-btn">CONNECT →</span></button>
           <button class="broker-choice" data-broker="Other prop firm" data-category="prop"><b>Other Prop Firm</b><small>Request a connector</small><span class="broker-connect-btn">CONNECT →</span></button>
           <button class="broker-choice" data-broker="Binance" data-category="crypto"><b>Binance</b><small>Crypto account</small><span class="broker-connect-btn">CONNECT →</span></button>
-          <button class="broker-choice" data-broker="Coinbase" data-category="crypto"><b>Coinbase</b><small>Crypto account</small><span class="broker-connect-btn">CONNECT →</span></button>
-          <button class="broker-choice" data-broker="Kraken" data-category="crypto"><b>Kraken</b><small>Crypto account</small><span class="broker-connect-btn">CONNECT →</span></button>
+          <button class="broker-choice" data-broker="Coinbase" data-category="crypto"><b>Coinbase</b><small>Crypto account</small><span class="broker-connect-btn">CONNECT →</span></button>          <button class="broker-choice" data-broker="Kraken" data-category="crypto"><b>Kraken</b><small>Crypto account</small><span class="broker-connect-btn">CONNECT →</span></button>
           <button class="broker-choice" data-broker="Other broker" data-category="all"><b>Other broker</b><small>Request a connector</small><span class="broker-connect-btn">CONNECT →</span></button>
         </div>
       </div>
@@ -1034,7 +1031,7 @@ input:focus,select:focus,textarea:focus{
       <div style="font-size:32px; margin-bottom:8px;">🔒</div>
       <div style="font-size:13px; font-weight:700; margin-bottom:6px;">Performance Breakdown is Premium</div>
       <div style="font-size:12px; color:var(--muted); margin-bottom:16px; line-height:1.5;">See exactly which setups and sessions are actually making you money.</div>
-      <button class="btn-primary" id="perfUnlockBtn" style="width:100%; justify-content:center;">⭐ Unlock Premium — $5</button>
+      <button class="btn-primary" id="perfUnlockBtn" style="width:100%; justify-content:center;">⭐ Unlock Premium — $4.99</button>
     </div>
     <div id="perfUnlocked">
       <div style="font-size:10px; color:var(--faint); letter-spacing:0.08em; margin-bottom:8px;">BY SETUP / MODEL</div>
@@ -1076,7 +1073,7 @@ input:focus,select:focus,textarea:focus{
       <div style="font-size:32px; margin-bottom:8px;">🔒</div>
       <div style="font-size:13px; font-weight:700; margin-bottom:6px;">Achievements are Premium</div>
       <div style="font-size:12px; color:var(--muted); margin-bottom:16px; line-height:1.5;">50+ badges to unlock — milestones, money, streaks, discipline, psychology, consistency, backtesting, and more.</div>
-      <button class="btn-primary" id="achUnlockBtn" style="width:100%; justify-content:center;">⭐ Unlock Premium — $5</button>
+      <button class="btn-primary" id="achUnlockBtn" style="width:100%; justify-content:center;">⭐ Unlock Premium — $4.99</button>
     </div>
     <div id="achUnlocked">
       <div style="font-size:11px; color:var(--faint); margin-bottom:14px;" id="achievementsProgressLabel">0 / 0 unlocked</div>
@@ -1093,7 +1090,7 @@ input:focus,select:focus,textarea:focus{
       <div style="font-size:32px; margin-bottom:8px;">🔒</div>
       <div style="font-size:13px; font-weight:700; margin-bottom:6px;">Unlock the Recap Card</div>
       <div style="font-size:12px; color:var(--muted); margin-bottom:16px; line-height:1.5;">Generate a clean, shareable image of your monthly stats — win rate, total R, best trade, discipline, streak. Perfect for posting or just keeping a record.</div>
-      <button class="btn-primary" id="recapUnlockBtn" style="width:100%; justify-content:center;">⭐ Unlock Premium — $5</button>
+      <button class="btn-primary" id="recapUnlockBtn" style="width:100%; justify-content:center;">⭐ Unlock Premium — $4.99</button>
     </div>
 
     <div id="recapUnlocked" style="display:none;">
@@ -1149,7 +1146,7 @@ input:focus,select:focus,textarea:focus{
   </div>
   <div class="drawer-item" id="removeAdsDrawerItem">
     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-    Get Premium ($4.99 / 30 days)
+    Get Premium ($4.99)
   </div>
   <div class="drawer-item" id="recapDrawerItem">
     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="9" x2="15" y2="9"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="12" y2="17"/></svg>
@@ -1198,7 +1195,7 @@ input:focus,select:focus,textarea:focus{
         <p><b>Service.</b> TradeCycle is a journal, analysis and educational tool. It is not a broker, investment adviser, financial planner, exchange or execution service.</p>
         <p><b>No financial advice or guarantees.</b> Journal statistics, charts, psychology content and trading-related material are informational only. TradeCycle does not promise profits, accuracy, win rates or future results. You remain responsible for your trading decisions and losses.</p>
         <p><b>Your data and imports.</b> You are responsible for the accuracy and lawful use of information you enter or import, and for maintaining your own backups.</p>
-        <p><b>Third-party services and Premium.</b> Payments are handled through the payment destination shown in the app. Third-party services have their own terms. TradeCycle currently presents Premium at $4.99 for 30 days, subject to the payment flow shown at the time of purchase.</p>
+        <p><b>Third-party services and Premium.</b> Payments are handled through the payment destination shown in the app. Third-party services have their own terms. TradeCycle currently presents Premium at $4.99, subject to the payment flow shown at the time of purchase.</p>
         <p><b>Acceptable use.</b> Do not use TradeCycle unlawfully, to abuse third-party services, distribute malware, interfere with the app, or process information you do not have permission to use.</p>
         <p><b>Availability and liability.</b> Features can change or be unavailable. To the extent permitted by law, TradeCycle is provided as-is and does not guarantee uninterrupted or error-free operation. Liability is limited to the extent permitted by applicable law, and nothing excludes liability that cannot legally be excluded.</p>
         <p><b>Changes and contact.</b> These terms may change as the product develops. Use the official TradeCycle support/contact channel for legal or support questions.</p>
@@ -1293,7 +1290,7 @@ input:focus,select:focus,textarea:focus{
 <div class="modal-bg" id="removeAdsModal">
   <div class="modal" onclick="event.stopPropagation()">
     <div class="modal-head">
-      <div class="modal-title">⭐ GET PREMIUM — $4.99 / 30 DAYS</div>
+      <div class="modal-title">⭐ GET PREMIUM — $4.99</div>
       <svg class="close-x" id="removeAdsClose" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
     </div>
 
@@ -1306,11 +1303,12 @@ input:focus,select:focus,textarea:focus{
         ✓ Monthly Recap Card — a shareable stats card of your month
       </div>
       <div style="font-size:12px; color:var(--text); line-height:1.8; margin-bottom:14px;">
-        <b>1.</b> Pay $4.99 below<br>
-        <b>2.</b> Enter the email you paid with and request your unlock code
+        <b>1.</b> Tap below and send $4.99<br>
+        <b>2.</b> Enter your email and request your unlock code
       </div>
-      <a class="btn-primary" href="https://buymeacoffee.com/yayazheyv" rel="noopener noreferrer" style="width:100%; justify-content:center; margin-bottom:14px; text-decoration:none;">☕ Pay $4.99 on Buy Me a Coffee</a>
-      <div style="font-size:10px; color:var(--faint); margin:-4px 0 12px; text-align:center;">Secure payment opens on Buy Me a Coffee.</div>
+      <a href="https://buymeacoffee.com/yayazheyv" target="_blank" style="display:block; text-decoration:none;">
+        <button class="btn-primary" style="width:100%; justify-content:center; margin-bottom:14px;">☕ Pay $4.99 on Buy Me a Coffee</button>
+      </a>
       <input type="email" id="adReqEmailInput" placeholder="Email you paid with" autocomplete="off">
       <button class="btn-primary" id="adReqSendBtn" style="width:100%; justify-content:center; margin-top:8px;">I've Paid — Request My Code</button>
       <div class="lock-error" id="adReqError"></div>
@@ -1318,7 +1316,7 @@ input:focus,select:focus,textarea:focus{
 
     <div id="removeAdsStep2" style="display:none;">
       <div style="font-size:12px; color:var(--muted); line-height:1.6; margin-bottom:14px;">
-        Enter the email you paid with. After payment is confirmed, you will receive a unique one-time 30-day Premium code. Your journal data is never deleted when Premium expires.
+        Request sent! Once Khalid confirms your payment, he'll send you a code. Enter your email and that code below.
       </div>
       <input type="email" id="adUnlockEmailInput" placeholder="Email you paid with" autocomplete="off">
       <input type="text" id="adUnlockCodeInput" placeholder="Unlock code" autocomplete="off">
@@ -1476,7 +1474,6 @@ const DISCIPLINE = ["A","B","C","D","F"];
 const STORAGE_KEY = "ict-journal-trades-v1";
 const BACKUP_KEY = "ict-journal-backup-v1";
 const IMG_PREFIX = "ict-journal-img-";
-const WEB3FORMS_KEY = "__WEB3FORMS_KEY__";
 
 // --- Storage layer ---
 // window.storage (Claude's cloud save) only exists when this runs inside Claude's own
@@ -1650,50 +1647,85 @@ async function loadPsychProgress(){
   }catch(e){ psychRead = []; }
 }
 
-// --- Premium subscription: $4.99 for 30 days ---
-// Journal/trading data uses separate storage keys and is never cleared when Premium expires.
+// --- Remove Ads ($4.99 one-time, same request-to-code pattern as the access gate) ---
 const AD_REMOVED_KEY = "ict-journal-ads-removed";
-const PREMIUM_EXPIRY_KEY = "tradecycle-premium-expiry-v2";
-const PREMIUM_EMAIL_KEY = "tradecycle-premium-email-v2";
-const PREMIUM_DAYS = 30;
-const PREMIUM_MS = PREMIUM_DAYS * 24 * 60 * 60 * 1000;
+const PREMIUM_EXPIRY_KEY = "tradecycle-premium-expiry-v1";
+const PREMIUM_EMAIL_KEY = "tradecycle-premium-email-v1";
+// Premium server. On the Netlify website this is same-origin (empty string).
+// In the Android APK and Windows app (file:// pages) there is no server on the same origin,
+// so the full URL of your deployed Netlify site is used. SET THIS to your live site URL.
+const TRADECYCLE_SITE_URL = "https://tradecycle3.netlify.app";
+function premiumApiUrl(action){
+  const onWeb = /^https?:$/.test(location.protocol);
+  const base = onWeb ? "" : String(TRADECYCLE_SITE_URL||"").replace(/\/+$/,"");
+  if(!onWeb && !base) throw new Error("Premium server address is not configured in this build. Please use the TradeCycle website or update the app.");
+  return base + "/api/premium/" + action;
+}
 const AD_SALT = "khalid-adremoval-2026-salt-q9x";
 const POPUNDER_SRC = "https://pl31269502.profitableratecpmnetwork.com/bb/1c/9f/bb1c9f6b3faa683819f503c127832f87.js";
 const SOCIALBAR_SRC = "https://pl31226788.profitableratecpmnetwork.com/97/f3/d7/97f3d7fc529b13530280660f50ae86d0.js";
 
+async function getPremiumExpiry(){
+  try{ const res=await storageGet(PREMIUM_EXPIRY_KEY); return res&&res.value?Number(res.value):0; }catch(e){ return 0; }
+}
 async function activatePremiumFromServer(email, code){
-  const currentExpiry = await getPremiumExpiry();
-  const res = await fetch("/api/premium/activate",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email:email.trim().toLowerCase(),code:code.trim().toUpperCase(),currentExpiry})});
+  const currentExpiry=await getPremiumExpiry();
+  const res=await fetch(premiumApiUrl("activate"),{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email:email.trim().toLowerCase(),code:code.trim().toUpperCase(),currentExpiry})});
   let data={}; try{data=await res.json();}catch(e){}
-  if(!res.ok||!data.ok) throw new Error(data.error||"Premium activation failed.");
+  if(!res.ok||!data.ok)throw new Error(data.error||"Premium activation failed.");
   await storageSet(PREMIUM_EXPIRY_KEY,String(data.expiresAt));
   await storageSet(PREMIUM_EMAIL_KEY,email.trim().toLowerCase());
   await storageSet(AD_REMOVED_KEY,"true");
   return Number(data.expiresAt);
 }
-async function getPremiumExpiry(){
-  try{
-    const res = await storageGet(PREMIUM_EXPIRY_KEY);
-    const n = Number(res && res.value);
-    return Number.isFinite(n) ? n : 0;
-  }catch(e){ return 0; }
-}
 async function areAdsRemoved(){
-  const expiry = await getPremiumExpiry();
-  if(expiry > Date.now()) return true;
-  try{ await storageSet(AD_REMOVED_KEY, "false"); }catch(e){}
-  return false;
+  try{
+    const res = await storageGet(AD_REMOVED_KEY);
+    if(!(res && res.value === "true")) return false;
+    const exp = await getPremiumExpiry();
+    // Legacy flag with no stored expiry: treat as inactive. Journal data is never touched.
+    if(!exp || exp <= Date.now()){ await storageDelete(AD_REMOVED_KEY); return false; }
+    return true;
+  }catch(e){ return false; }
 }
-async function activatePremium(email){
-  const now = Date.now();
-  const current = await getPremiumExpiry();
-  const base = Math.max(now, current || 0);
-  const expiry = base + PREMIUM_MS;
-  await storageSet(PREMIUM_EXPIRY_KEY, String(expiry));
-  await storageSet(PREMIUM_EMAIL_KEY, email.trim().toLowerCase());
-  await storageSet(AD_REMOVED_KEY, "true");
-  return expiry;
+async function injectPopunderIfNeeded(){
+  const removed = await areAdsRemoved();
+  if(removed) return;
+  const script = document.createElement("script");
+  script.src = POPUNDER_SRC;
+  document.body.appendChild(script);
 }
+async function injectSocialBarIfNeeded(){
+  const removed = await areAdsRemoved();
+  if(removed) return;
+  const script = document.createElement("script");
+  script.src = SOCIALBAR_SRC;
+  document.body.appendChild(script);
+}
+async function injectBannerIfNeeded(){
+  const removed = await areAdsRemoved();
+  const container = document.getElementById("adBannerContainer");
+  if(removed){
+    container.classList.add("hidden");
+    document.body.style.paddingBottom = "16px";
+    return;
+  }
+  container.classList.remove("hidden");
+  const slot = document.getElementById("adBannerSlot");
+  const configScript = document.createElement("script");
+  configScript.textContent = `atOptions = { 'key':'efce264b5d905cc82f2199b8560ec64f', 'format':'iframe', 'height':50, 'width':320, 'params':{} };`;
+  slot.appendChild(configScript);
+  const adScript = document.createElement("script");
+  adScript.src = "https://www.highrevenueformat.com/efce264b5d905cc82f2199b8560ec64f/invoke.js";
+  slot.appendChild(adScript);
+}
+async function injectAdsIfNeeded(){
+  await injectBannerIfNeeded();
+  await injectPopunderIfNeeded();
+  // SocialBar still disabled — testing banner + this second ad first.
+  // await injectSocialBarIfNeeded();
+}
+
 document.getElementById("removeAdsDrawerItem").addEventListener("click", async ()=>{
   closeDrawer();
   stopPremiumPolling();
@@ -1731,7 +1763,7 @@ async function pollPremiumRequest(clientToken){
   if(!clientToken)return;
   const errEl=document.getElementById("adUnlockError");
   try{
-    const res=await fetch("/api/premium/status",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({clientToken})});
+    const res=await fetch(premiumApiUrl("status"),{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({clientToken})});
     let data={};try{data=await res.json();}catch(e){}
     if(!res.ok||!data.ok) return;
     if(data.status==="pending"){
@@ -1766,36 +1798,21 @@ document.getElementById("adReqSendBtn").addEventListener("click", async ()=>{
   errEl.textContent="";isSendingAdRequest=true;
   const btn=document.getElementById("adReqSendBtn"), oldText=btn.textContent;btn.disabled=true;btn.textContent="Sending request...";
   try{
-    const res=await fetch("/api/premium/request",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email})});
+    let res;
+    try{ res=await fetch(premiumApiUrl("request"),{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email})}); }
+    catch(netErr){ if(netErr&&/not configured/i.test(netErr.message||""))throw netErr; throw new Error("Can't reach the Premium server. Check your internet connection and try again."); }
     let data={};try{data=await res.json();}catch(e){}
-    if(!res.ok||!data.ok)throw new Error(data.error||"Couldn't create the Premium request.");
-
-    const wf=data.web3forms||{};
-    if(!wf.message)throw new Error("Premium request was created, but the email notification details were missing.");
-    const web3Payload={
-      access_key:WEB3FORMS_KEY,
-      subject:wf.subject||("TradeCycle Premium request — "+(data.requestId||"")),
-      from_name:"TradeCycle Premium",
-      name:wf.name||"TradeCycle Premium",
-      email:wf.email||email,
-      replyto:wf.replyto||email,
-      message:wf.message
-    };
-    let mailRes;
-    try{
-      mailRes=await fetch("https://api.web3forms.com/submit",{
-        method:"POST",
-        headers:{"Content-Type":"application/json","Accept":"application/json"},
-        body:JSON.stringify(web3Payload)
-      });
-    }catch(mailNetworkError){
-      throw new Error("Your request was created, but Web3Forms could not be reached. Please try again.");
+    if(!data||(!res.ok&&!data.error))throw new Error("Premium server is not responding correctly (error "+res.status+"). Please try again in a minute.");
+    if(!res.ok||!data.ok)throw new Error(data.error||"Couldn't send the request.");
+    // Backup notification: if the server could not email the admin, send it from this device (Web3Forms works from browsers).
+    // It never blocks or fails the request - the request is already saved on the server and visible on the admin page.
+    if(data.emailed===false){
+      try{
+        fetch("https://api.web3forms.com/submit",{method:"POST",headers:{"Content-Type":"application/json","Accept":"application/json"},
+          body:JSON.stringify({access_key:"7136c2e1-07a3-4eaf-b57d-1e7349d14878",subject:"TradeCycle Premium request - "+(data.requestId||""),from_name:"TradeCycle Premium",replyto:email,
+            message:"NEW TRADECYCLE PREMIUM REQUEST\n\nRequest ID: "+(data.requestId||"")+"\nCustomer email: "+email+"\nAmount: $4.99 / 30 days\n\n1) Check Buy Me a Coffee for the $4.99 payment.\n2) Open https://tradecycle3.netlify.app/api/premium/admin?key=YOUR_ADMIN_KEY and press Approve or Deny."})}).catch(function(){});
+      }catch(mailErr){}
     }
-    let mailData={};try{mailData=await mailRes.json();}catch(e){}
-    if(!mailRes.ok || mailData.success===false){
-      throw new Error((mailData&&mailData.message)||"Web3Forms could not send the request email.");
-    }
-
     await storageSet(PREMIUM_REQUEST_TOKEN_KEY,String(data.clientToken||""));
     await storageSet(PREMIUM_REQUEST_ID_KEY,String(data.requestId||""));
     await storageSet(PREMIUM_EMAIL_KEY,email.trim().toLowerCase());
@@ -1980,7 +1997,6 @@ function unlockApp(){
 }
 
 initGate();
-
 let trades = [];
 let hasBackup = false;
 let filterSession = "All";
@@ -2979,8 +2995,7 @@ const CHART_SYMBOLS = [
 ];
 const CHART_APIKEY_KEY = "ict-journal-av-apikey";
 let chartApiKey = "";
-let chartCandles = [];
-let chartStartIndex = 0;
+let chartCandles = [];let chartStartIndex = 0;
 let chartRevealCount = 0;
 let chartPlaying = false;
 let chartPlayTimer = null;
@@ -3979,8 +3994,7 @@ document.getElementById("recapDesktopDownloadBtn").addEventListener("click", ()=
   showToast("Recap card downloaded.", "SAVED");
 });
 
-function generateCertificate(totalR, monthDate){
-  const monthLabel = monthDate.toLocaleString(undefined, {month:"long", year:"numeric"});
+function generateCertificate(totalR, monthDate){  const monthLabel = monthDate.toLocaleString(undefined, {month:"long", year:"numeric"});
   const canvas = document.createElement("canvas");
   canvas.width = 1200; canvas.height = 850;
   const ctx = canvas.getContext("2d");
@@ -4127,7 +4141,7 @@ async function renderGoal(){
   if(goalMet){
     btnHtml = premium
       ? `<button class="btn-primary" id="certBtn" style="margin-top:12px; width:100%; justify-content:center;">🎓 Download Certificate</button>`
-      : `<button class="btn-primary" id="certBtn" style="margin-top:12px; width:100%; justify-content:center;">⭐ Unlock Certificate — $5</button>`;
+      : `<button class="btn-primary" id="certBtn" style="margin-top:12px; width:100%; justify-content:center;">⭐ Unlock Certificate — $4.99</button>`;
   }
   displayEl.innerHTML = `
     <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:6px;">
@@ -4313,10 +4327,9 @@ function openBrokerConnect(broker){
           <div style="font-size:10px;color:var(--faint);letter-spacing:.1em;margin-bottom:6px;">USE THIS NOW</div>
           <div style="font-size:12px;color:var(--text);line-height:1.6;">📥 <b>Import Broker CSV</b> — works offline and supports MT4, MT5, cTrader and prop-firm exports.</div>
         </div>
-        <button class="btn-primary" type="button" id="brokerConnectCloseDynamic" style="margin:0 auto;justify-content:center;">CLOSE</button>
+        <button class="btn-primary" type="button" id="brokerConnectModalCloseBtn" style="margin:0 auto;justify-content:center;">CLOSE</button>
       </div>`;
     document.getElementById("brokerConnectModal")?.classList.add("open");
-    document.getElementById("brokerConnectCloseDynamic")?.addEventListener("click",()=>document.getElementById("brokerConnectModal")?.classList.remove("open"));
   });
 }
 document.querySelectorAll(".broker-cat").forEach(tab=>tab.addEventListener("click",()=>{
@@ -4329,6 +4342,7 @@ document.querySelectorAll(".broker-cat").forEach(tab=>tab.addEventListener("clic
 }));
 document.querySelectorAll(".broker-choice").forEach(btn=>btn.addEventListener("click",()=>openBrokerConnect(btn.dataset.broker)));
 document.getElementById("brokerConnectClose")?.addEventListener("click",()=>document.getElementById("brokerConnectModal").classList.remove("open"));
+document.getElementById("brokerConnectModalCloseBtn")?.addEventListener("click",()=>document.getElementById("brokerConnectModal")?.classList.remove("open"));
 document.getElementById("brokerConnectModal")?.addEventListener("click",e=>{if(e.target.id==="brokerConnectModal")e.currentTarget.classList.remove("open")});
 
 // --- Broker auto-log adapter: ready for a secure backend/OAuth connector ---
@@ -4589,98 +4603,126 @@ loadCustomLists();
     date:["date","time","open time","close time","datetime","timestamp","entry time"],
     pair:["symbol","pair","instrument","market","asset"],
     direction:["type","side","direction","action","trade type"],
-    entry:["entry","entry price","open price","open","price open","open price"],
+    entry:["entry","entry price","open price","open","price open"],
     stop:["stop","sl","stop loss","stoploss","s/l"],
     target:["target","tp","take profit","takeprofit","t/p"],
     exit:["exit","exit price","close price","close","price close"],
     pnl:["profit","p/l","pnl","p&l","net profit","net p/l","result","profit/loss"],
     r:["r","r result","r multiple","r-multiple","rr","r:r","risk reward"],
     outcome:["outcome","result type","status","win/loss","win loss"],
-    session:["session","trading session"], setup:["setup","strategy","model","setup name"],
-    bias:["bias","market bias"], discipline:["discipline","grade","discipline grade"],
-    entryReason:["entry reason","reason for entry","entry notes"], exitReason:["exit reason","reason for exit","exit notes"], notes:["notes","comment","comments","remarks"]
+    session:["session","trading session"],
+    setup:["setup","strategy","model","setup name"],
+    bias:["bias","market bias"],
+    discipline:["discipline","grade","discipline grade"],
+    entryReason:["entry reason","reason for entry","entry notes"],
+    exitReason:["exit reason","reason for exit","exit notes"],
+    notes:["notes","comment","comments","remarks"]
   };
   const norm=s=>String(s??"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
   function esc(s){return String(s??"").replace(/[&<>\"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]));}
-  function csvParse(text){
-    const rows=[]; let row=[], cell="", quoted=false;
-    for(let i=0;i<text.length;i++){const c=text[i], n=text[i+1];
-      if(quoted){ if(c==='"'&&n==='"'){cell+='"';i++;} else if(c==='"'){quoted=false;} else cell+=c; }
-      else if(c==='"'){quoted=true;}
-      else if(c===','){row.push(cell);cell="";}
-      else if(c===';' && row.length===0 && !text.slice(Math.max(0,i-200),i).includes(',')){row.push(cell);cell="";}
-      else if(c==='\t'){row.push(cell);cell="";}
-      else if(c==='\n'||c==='\r'){if(c==='\r'&&n==='\n')i++;row.push(cell);cell="";if(row.some(v=>String(v).trim()!==""))rows.push(row);row=[];}
-      else cell+=c;
-    }
-    row.push(cell); if(row.some(v=>String(v).trim()!==""))rows.push(row);
-    return rows;
-  }
   function parseDelimited(text){
     const sample=text.split(/\r?\n/).slice(0,8).join("\n");
     const counts=[{d:",",n:(sample.match(/,/g)||[]).length},{d:";",n:(sample.match(/;/g)||[]).length},{d:"\t",n:(sample.match(/\t/g)||[]).length}].sort((a,b)=>b.n-a.n);
     const delim=counts[0].n?counts[0].d:",";
-    const out=[]; let row=[],cell="",quoted=false;
-    for(let i=0;i<text.length;i++){const c=text[i],n=text[i+1];
-      if(quoted){if(c==='"'&&n==='"'){cell+='"';i++;}else if(c==='"')quoted=false;else cell+=c;}
-      else if(c==='"')quoted=true;
+    const out=[];let row=[],cell="",quoted=false;
+    for(let i=0;i<text.length;i++){
+      const c=text[i],n=text[i+1];
+      if(quoted){
+        if(c==='"'&&n==='"'){cell+='"';i++;}
+        else if(c==='"')quoted=false;
+        else cell+=c;
+      }else if(c==='"')quoted=true;
       else if(c===delim){row.push(cell);cell="";}
-      else if(c==='\n'||c==='\r'){if(c==='\r'&&n==='\n')i++;row.push(cell);cell="";if(row.some(v=>String(v).trim()!==""))out.push(row);row=[];}
-      else cell+=c;
+      else if(c==='\n'||c==='\r'){
+        if(c==='\r'&&n==='\n')i++;
+        row.push(cell);cell="";
+        if(row.some(v=>String(v).trim()!==""))out.push(row);
+        row=[];
+      }else cell+=c;
     }
     row.push(cell);if(row.some(v=>String(v).trim()!==""))out.push(row);return out;
   }
   function detectHeader(rows){
     let best=0,bestScore=-1;
-    for(let i=0;i<Math.min(rows.length,12);i++){const ns=rows[i].map(norm);let score=0;Object.values(aliases).forEach(arr=>{if(ns.some(h=>arr.includes(h)))score++;});if(score>bestScore){bestScore=score;best=i;}}
+    for(let i=0;i<Math.min(rows.length,12);i++){
+      const ns=rows[i].map(norm);let score=0;
+      Object.values(aliases).forEach(arr=>{if(ns.some(h=>arr.includes(h)))score++;});
+      if(score>bestScore){bestScore=score;best=i;}
+    }
     return best;
   }
   function detectMapping(h){
-    const m={}; const nh=h.map(norm);
-    Object.entries(aliases).forEach(([field,als])=>{let idx=nh.findIndex(x=>als.includes(x));if(idx>=0)m[field]=idx;});
+    const m={},nh=h.map(norm);
+    Object.entries(aliases).forEach(([field,als])=>{const idx=nh.findIndex(x=>als.includes(x));if(idx>=0)m[field]=idx;});
     return m;
   }
   function val(row,field,map){const i=map[field];return i==null?"":String(row[i]??"").trim();}
   function parseDate(v){
     if(!v)return new Date().toISOString().slice(0,10);
-    let d=new Date(v); if(Number.isNaN(d.getTime())){const m=String(v).match(/(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{2,4})/);if(m)d=new Date(Number(m[3].length===2?"20"+m[3]:m[3]),Number(m[2])-1,Number(m[1]));}
+    let d=new Date(v);
+    if(Number.isNaN(d.getTime())){
+      const m=String(v).match(/(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{2,4})/);
+      if(m)d=new Date(Number(m[3].length===2?"20"+m[3]:m[3]),Number(m[2])-1,Number(m[1]));
+    }
     return Number.isNaN(d.getTime())?new Date().toISOString().slice(0,10):d.toISOString().slice(0,10);
   }
-  function direction(v){const x=norm(v);if(/sell|short|out|bear/.test(x))return "Short";return "Long";}
-  function sessionGuess(dateVal){const d=new Date(dateVal);const h=d.getHours();if(h>=0&&h<7)return "Asian KZ";if(h>=7&&h<12)return "London Open";if(h>=12&&h<16)return "NY AM KZ";if(h>=16&&h<18)return "NY Lunch";if(h>=18&&h<22)return "NY PM KZ";return "London Close";}
-  function rCalc(entry,stop,exit,dir){const e=parseFloat(entry),s=parseFloat(stop),x=parseFloat(exit);if(!Number.isFinite(e)||!Number.isFinite(s)||!Number.isFinite(x)||e===s)return null;return ((dir==="Long"?x-e:e-x)/Math.abs(e-s));}
+  function direction(v){const x=norm(v);return /sell|short|out|bear/.test(x)?"Short":"Long";}
+  function sessionGuess(dateVal){
+    const d=new Date(dateVal),h=d.getHours();
+    if(h>=0&&h<7)return "Asian KZ";
+    if(h>=7&&h<12)return "London Open";
+    if(h>=12&&h<16)return "NY AM KZ";
+    if(h>=16&&h<18)return "NY Lunch";
+    if(h>=18&&h<22)return "NY PM KZ";
+    return "London Close";
+  }
+  function rCalc(entry,stop,exit,dir){
+    const e=parseFloat(entry),s=parseFloat(stop),x=parseFloat(exit);
+    if(!Number.isFinite(e)||!Number.isFinite(s)||!Number.isFinite(x)||e===s)return null;
+    return (dir==="Long"?x-e:e-x)/Math.abs(e-s);
+  }
   function outcomeFromR(r){return r>0?"Win":r<0?"Loss":"BE";}
   function showMapping(){
     const fields=["ticket","date","pair","direction","entry","stop","target","exit","pnl","r","outcome","session","setup","bias","discipline","entryReason","exitReason","notes"];
-    mappingBox.style.display="block";mappingBox.innerHTML=`<div style="font-size:11px;font-weight:800;">CSV COLUMN MAPPING</div><div class="tc-csv-note">Auto-detection is shown below. Change any field if your broker uses unusual column names.</div><div class="tc-csv-map">${fields.map(f=>`<label>${f.toUpperCase()}<select data-map-field="${f}"><option value="">— not mapped —</option>${headers.map((h,i)=>`<option value="${i}" ${detected[f]===i?'selected':''}>${esc(h)}</option>`).join("")}</select></label>`).join("")}</div><div class="tc-csv-actions"><button class="btn-primary" id="tcCsvImportBtn" type="button">IMPORT TRADES</button><button class="btn-ghost" id="tcCsvCancelBtn" type="button">Cancel</button></div>`;
+    mappingBox.style.display="block";
+    mappingBox.innerHTML=`<div style="font-size:11px;font-weight:800;">CSV COLUMN MAPPING</div><div class="tc-csv-note">Auto-detection is shown below. Change any field if your broker uses unusual column names.</div><div class="tc-csv-map">${fields.map(f=>`<label>${f.toUpperCase()}<select data-map-field="${f}"><option value="">— not mapped —</option>${headers.map((h,i)=>`<option value="${i}" ${detected[f]===i?'selected':''}>${esc(h)}</option>`).join("")}</select></label>`).join("")}</div><div class="tc-csv-actions"><button class="btn-primary" id="tcCsvImportBtn" type="button">IMPORT TRADES</button><button class="btn-ghost" id="tcCsvCancelBtn" type="button">Cancel</button></div>`;
     mappingBox.querySelectorAll("select[data-map-field]").forEach(sel=>sel.addEventListener("change",()=>{detected[sel.dataset.mapField]=sel.value===""?undefined:Number(sel.value);}));
     document.getElementById("tcCsvCancelBtn").onclick=()=>{mappingBox.style.display="none";};
     document.getElementById("tcCsvImportBtn").onclick=importRows;
   }
   async function importRows(){
-    const existing=new Set(trades.map(t=>String(t.importTicket||t.ticket||"" )).filter(Boolean));let added=0,skipped=0;
+    const existing=new Set(trades.map(t=>String(t.importTicket||t.ticket||"")).filter(Boolean));let added=0,skipped=0;
     for(const row of parsedRows){
-      const ticket=val(row,"ticket",detected); if(ticket&&existing.has(ticket)){skipped++;continue;}
-      const pair=val(row,"pair",detected).toUpperCase(); if(!pair){skipped++;continue;}
-      const date=val(row,"date",detected);const d=direction(val(row,"direction",detected));
+      const ticket=val(row,"ticket",detected);if(ticket&&existing.has(ticket)){skipped++;continue;}
+      const pair=val(row,"pair",detected).toUpperCase();if(!pair){skipped++;continue;}
+      const date=val(row,"date",detected),d=direction(val(row,"direction",detected));
       const entry=val(row,"entry",detected),stop=val(row,"stop",detected),exit=val(row,"exit",detected),target=val(row,"target",detected);
       let r=parseFloat(val(row,"r",detected));if(!Number.isFinite(r))r=rCalc(entry,stop,exit,d);if(!Number.isFinite(r))r=0;
-      let pnl=val(row,"pnl",detected);
-      let outcome=val(row,"outcome",detected);if(!outcome)outcome=outcomeFromR(r);else {const o=norm(outcome);outcome=/loss|lose|lost|negative/.test(o)?"Loss":/be|break even|flat/.test(o)?"BE":"Win";}
+      const pnl=val(row,"pnl",detected);let outcome=val(row,"outcome",detected);
+      if(!outcome)outcome=outcomeFromR(r);else{const o=norm(outcome);outcome=/loss|lose|lost|negative/.test(o)?"Loss":/be|break even|flat/.test(o)?"BE":"Win";}
       const ticketId=ticket||`${pair}-${date}-${entry}-${exit}-${pnl}`;
-      const t={id:uid(),importTicket:ticket||ticketId,ticket:ticket||"",date:parseDate(date),pair,direction:d,session:val(row,"session",detected)||sessionGuess(date),bias:val(row,"bias",detected)||"Ranging",setup:val(row,"setup",detected)?val(row,"setup",detected).split(/[,|;]/).map(x=>x.trim()).filter(Boolean):[],checklist:[],entry,stop,target,exit,rResult:r.toFixed(2),pnl,entryReason:val(row,"entryReason",detected),exitReason:val(row,"exitReason",detected),brokerSynced:true,outcome,discipline:val(row,"discipline",detected)||"B",mistakes:"",lessons:"",notes:val(row,"notes",detected),hasImage:false,backtest:false,imported:true,source:"CSV"};
+      const setup=val(row,"setup",detected);
+      const t={id:uid(),importTicket:ticket||ticketId,ticket:ticket||"",date:parseDate(date),pair,direction:d,session:val(row,"session",detected)||sessionGuess(date),bias:val(row,"bias",detected)||"Ranging",setup:setup?setup.split(/[,|;]/).map(x=>x.trim()).filter(Boolean):[],checklist:[],entry,stop,target,exit,rResult:r.toFixed(2),pnl,entryReason:val(row,"entryReason",detected),exitReason:val(row,"exitReason",detected),brokerSynced:true,outcome,discipline:val(row,"discipline",detected)||"B",mistakes:"",lessons:"",notes:val(row,"notes",detected),hasImage:false,backtest:false,imported:true,source:"CSV"};
       trades.push(t);if(ticket)existing.add(ticket);added++;
     }
-    trades.sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:0);await persist();renderAll();mappingBox.style.display="none";status.innerHTML=`<span style="color:var(--green);font-weight:800;">✓ IMPORT COMPLETE</span> — ${added} trade${added===1?'':'s'} added${skipped?`, ${skipped} skipped/deduped`:''}.`;
+    trades.sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:0);await persist();renderAll();mappingBox.style.display="none";
+    status.innerHTML=`<span style="color:var(--green);font-weight:800;">✓ IMPORT COMPLETE</span> — ${added} trade${added===1?'':'s'} added${skipped?`, ${skipped} skipped/deduped`:''}.`;
   }
   input.addEventListener("change",async e=>{
     const file=e.target.files?.[0];if(!file)return;
-    try{const text=await file.text();const rows=parseDelimited(text);if(rows.length<2)throw new Error("CSV has no data rows.");const hi=detectHeader(rows);headers=rows[hi].map((x,i)=>String(x).trim()||`Column ${i+1}`);parsedRows=rows.slice(hi+1).filter(r=>r.some(v=>String(v).trim()!==""));detected=detectMapping(headers);
-      status.textContent=`Detected ${parsedRows.length} data row${parsedRows.length===1?'':'s'} and ${headers.length} columns. Review the mapping, then import.`;showMapping();
-    }catch(err){status.innerHTML=`<span style="color:var(--red);font-weight:800;">CSV ERROR</span> — ${esc(err.message||String(err))}`;}finally{input.value="";}
+    try{
+      const text=await file.text(),rows=parseDelimited(text);
+      if(rows.length<2)throw new Error("CSV has no data rows.");
+      const hi=detectHeader(rows);
+      headers=rows[hi].map((x,i)=>String(x).trim()||`Column ${i+1}`);
+      parsedRows=rows.slice(hi+1).filter(r=>r.some(v=>String(v).trim()!==""));
+      detected=detectMapping(headers);
+      status.textContent=`Detected ${parsedRows.length} data row${parsedRows.length===1?'':'s'} and ${headers.length} columns. Review the mapping, then import.`;
+      showMapping();
+    }catch(err){status.innerHTML=`<span style="color:var(--red);font-weight:800;">CSV ERROR</span> — ${esc(err.message||String(err))}`;}
+    finally{input.value="";}
   });
 })();
-
 </script>
 <div id="adBannerContainer" class="hidden">
   <div class="ad-label">ADVERTISEMENT</div>
