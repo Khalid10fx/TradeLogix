@@ -1,0 +1,32 @@
+{
+  "name": "tradecycle-desktop",
+  "version": "1.0.0",
+  "description": "TradeCycle desktop application",
+  "main": "main.cjs",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "build:win": "electron-builder --win nsis"
+  },
+  "devDependencies": {
+    "electron": "latest",
+    "electron-builder": "latest"
+  },
+  "build": {
+    "appId": "com.tradecycle.app",
+    "productName": "TradeCycle",
+    "files": [
+      "main.cjs",
+      "TRADECYCLE.html"
+    ],
+    "win": {
+      "target": "nsis",
+      "artifactName": "TradeCycle-Setup.exe"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  }
+}

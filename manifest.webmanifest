@@ -1,1 +1,16 @@
-{"name":"TradeCycle","short_name":"TradeCycle","start_url":"./index.html","display":"standalone","background_color":"#07111f","theme_color":"#07111f","description":"TradeCycle trading journal download center","icons":[{"src":"assets/icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]}
+{
+  "name": "TradeCycle — Trading Journal",
+  "short_name": "TradeCycle",
+  "description": "A focused trading journal for disciplined execution, review and performance tracking.",
+  "start_url": "/app/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#07111f",
+  "theme_color": "#07111f",
+  "orientation": "any",
+  "icons": [
+    {"src":"/assets/icon-192.png","sizes":"192x192","type":"image/png","purpose":"any maskable"},
+    {"src":"/assets/icon-512.png","sizes":"512x512","type":"image/png","purpose":"any maskable"},
+    {"src":"/assets/icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}
+  ]
+}

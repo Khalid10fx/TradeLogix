@@ -1,17 +1,21 @@
 [build]
   publish = "."
 
+# /app has its own folder (app/index.html). Netlify already serves /app/ natively;
+# this single rewrite makes /app (no trailing slash) work too. The old rules
+# (/app -> /app/ 301 plus /app/ -> /app/index.html) matched each other because Netlify
+# ignores trailing slashes, which caused a redirect loop / "Page Not Found".
 [[redirects]]
   from = "/app"
-  to = "/app/"
-  status = 301
-
-[[redirects]]
-  from = "/app/"
   to = "/app/index.html"
   status = 200
 
-[[redirects]]
-  from = "/"
-  to = "/index.html"
-  status = 200
+[[headers]]
+  for = "/downloads/*"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/sw.js"
+  [headers.values]
+    Cache-Control = "no-cache"

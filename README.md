@@ -1,15 +1,13 @@
-# TradeCycle — NT_FIXED
+# NT — TradeCycle Netlify Release (Corrected)
 
-Requested distribution layout:
+This is the corrected Netlify-ready TradeCycle package.
 
-- `index.html` — main scrolling website where users choose Web / Android / Windows
-- `assets/` — launcher assets
-- `desktop/` — packaged Web app copy
-- `downloads/` — APK and Windows installer
-- `manifest.webmanifest`
-- `netlify.toml`
-- `privacy.html`
-- `sw.js`
-- `terms.html`
+## Upload
+Upload the **contents of this folder** to your Netlify site. Keep `index.html` at the root.
 
-The package is assembled by GitHub Actions from the same fixed TradeCycle HTML used by the platform builds.
+## Included downloads
+- `downloads/TRADECYCLE.html` — corrected current TradeCycle web app
+- `downloads/TradeCycle-Setup.exe` — Windows installer
+- `downloads/TradeCycle.apk` — Android APK
+
+The Android button downloads the APK directly. The web-app download points to the corrected HTML.

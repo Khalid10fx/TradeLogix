@@ -209,3 +209,29 @@ jobs:
         with:
           name: TradeCycle-BUILT-BINARIES
           path: TradeCycle-BUILT-BINARIES.zip
+
+  release-binaries:
+    needs: publish-artifacts
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: built
+      - name: Collect the two files
+        run: |
+          mkdir -p out
+          cp built/windows-exe/TradeCycle-Setup.exe out/
+          cp built/android-apk/TradeCycle.apk out/
+          ls -la out
+      - name: Publish to the "latest-build" release (easy download link)
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: latest-build
+          name: Latest TradeCycle build (APK + Windows)
+          body: Built automatically from app/index.html. Download TradeCycle.apk (Android) and TradeCycle-Setup.exe (Windows).
+          files: |
+            out/TradeCycle.apk
+            out/TradeCycle-Setup.exe
+          make_latest: true

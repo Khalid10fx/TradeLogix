@@ -1,0 +1,5 @@
+ChatGPT: do ONLY this, nothing else.
+1) Put every file from this ZIP into the GitHub repo exactly as is (same folders). Do not delete or rename anything. Do not edit app/index.html, index.html or netlify.toml.
+2) Do not add Netlify functions, FormSubmit, or any server. Premium is Web3Forms-only on purpose.
+3) Let the workflow "Build APK and EXE" run. Report PASS/FAIL honestly for: workflow green, Release "latest-build" has TradeCycle.apk and TradeCycle-Setup.exe.
+4) Never claim something was tested if you did not run it.
