@@ -24,12 +24,15 @@ Do this on the website, the APK, and the Windows app.
 
 KEEP SECRET: ADMIN-PRIVATE-KEY.json (never upload it to GitHub or send it to anyone).
 
-CODE IN THE EMAIL (current way)
-Every request email you get already contains the customer's code between "=== CODE FOR THIS CUSTOMER ===" lines.
+4-DIGIT CODE IN THE EMAIL (current way)
+Every request email you get already contains the customer's 4-digit code between "=== CODE FOR THIS CUSTOMER ===" lines.
 1) Check Buy Me a Coffee for the payment.
-2) Press Reply (it goes to the customer) and paste the code. Done.
-The code works once, only for that email and that device, and must be used within 90 days.
-Code Maker (code-maker.html) is still there as a backup, for example to make a code for a customer's second device.
+2) Press Reply (it goes to the customer) and send just the 4 digits. Done.
+The code works once, only for that email and only on the device that made the request, for 14 days.
+After 5 wrong tries the app waits 30 minutes. A new request makes a new code, so renewing is the same steps again (the days left are kept, journal data is never deleted).
 
-IMPORTANT (your choice): the signing key is inside the app so it can put the code in the email. A technical person who reads the app code could make free codes.
-If that ever happens: run "node make-keypair.js", put the new keys in the app, rebuild. Old codes then stop working.
+IMPORTANT (your choice): the 4-digit secret is inside the app so it can put the code in the email. A technical person who reads the app code could work out codes. 4 digits is also short, so a script could guess it. If you want it safer, change TC_CODE_DIGITS to 6 in app/index.html (run ./sync-versions.sh).
+
+CODE MAKER (backup, code-maker.html)
+For special cases (for example a customer who lost their phone and needs a code for a NEW device) the Code Maker still makes long signed codes with your private key file.
+NEW private key file: ADMIN-PRIVATE-KEY.json in this download. The OLD private key file is no longer valid - delete it. Never upload the key to GitHub.

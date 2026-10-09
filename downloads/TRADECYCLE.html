@@ -1328,7 +1328,7 @@ input:focus,select:focus,textarea:focus{
     <div id="removeAdsStep2" style="display:none;">
       <div id="adUnlockInfo" style="font-size:12px; color:var(--muted); line-height:1.6; margin-bottom:14px;"></div>
       <input type="email" id="adUnlockEmailInput" placeholder="Email you paid with" autocomplete="off">
-      <textarea id="adUnlockCodeInput" rows="4" placeholder="Paste your code (starts with TC1-)" autocomplete="off" autocapitalize="characters" spellcheck="false" style="margin-top:8px; width:100%; resize:vertical; word-break:break-all;"></textarea>
+      <textarea id="adUnlockCodeInput" rows="2" placeholder="Enter your code (4 digits)" autocomplete="off" autocapitalize="characters" spellcheck="false" style="margin-top:8px; width:100%; resize:vertical; word-break:break-all;"></textarea>
       <button class="btn-primary" id="adUnlockBtn" type="button" style="width:100%; justify-content:center; margin-top:8px;">Unlock Premium</button>
       <div class="lock-error" id="adUnlockError"></div>
       <div style="font-size:11px; margin-top:10px;"><a id="adBackLink" style="color:var(--amber); cursor:pointer; text-decoration:underline;">← Back to plans / request a code</a></div>
@@ -1671,7 +1671,7 @@ const PREMIUM_LAST_REQ_KEY = "tradecycle-premium-last-request-v2";
 const WEB3FORMS_ACCESS_KEY = "7136c2e1-07a3-4eaf-b57d-1e7349d14878";
 const BUYMEACOFFEE_URL = "https://buymeacoffee.com/yayazheyv";
 const CODE_MAKER_URL = "https://tradecycle3.netlify.app/code-maker.html";
-const TC_PUBLIC_KEY_B64 = "BGha4B0En2zcFcjnj0e8irVufS2WuLGTlfNrZkYtn33OChU7vPVKwWJBYw9JFyKQPlMgeNBOLqZ4H6s+8TCeMjo=";
+const TC_PUBLIC_KEY_B64 = "BPXAa1SzTNAKAiZ6ZIdSc0SHBd8nO65iyK/rVYpYgB0rPQ/drCNa6sW/zUtywC8bnEzepXGYug03yu9fdnmjU3U=";
 const TC_EPOCH_MS = Date.UTC(2026,0,1);
 const TC_CODE_VALID_DAYS = 90;     // a code must be redeemed within 90 days of being made
 const TC_PLANS = {                 // days = how long Premium lasts. Change prices here (and in the Code Maker if you like).
@@ -1754,7 +1754,30 @@ async function getPremiumExpiry(){
 }
 // Verifies the code, makes sure it was not used before, then adds the plan time on top of any time left.
 // Journal data is never touched, so renewing after Premium ends (or while it is still active) keeps everything.
+async function activateShortCode(email,code){
+  const left=await tcCheckTriesLocked();
+  if(left) throw new Error("Too many wrong codes. Please wait "+left+" minute"+(left===1?"":"s")+" and try again.");
+  let pending=null; try{ const r=await storageGet(PREMIUM_PENDING_KEY); pending=r&&r.value?JSON.parse(r.value):null; }catch(e){}
+  if(!pending||!pending.r||!pending.time||Date.now()-pending.time>14*864e5) throw new Error("No active request found on this device. Tap \"I've Paid — Request My Code\" first (requests last 14 days).");
+  if(tcNormEmail(email)!==tcNormEmail(pending.email)) throw new Error("Use the same email you paid with ("+pending.email+").");
+  const deviceId=await getDeviceId();
+  const expected=await tcShortCode(pending.email,pending.plan,deviceId,pending.r);
+  if(String(code).trim()!==expected){
+    const locked=await tcRegisterWrongTry();
+    throw new Error(locked?"Too many wrong codes. Please wait 30 minutes and try again.":"That code is not correct. Check the digits and try again.");
+  }
+  const plan=TC_PLANS[pending.plan]; if(!plan) throw new Error("This request is no longer valid. Please request again.");
+  const base=Math.max(Date.now(), await getPremiumExpiry());
+  const expiresAt=base+plan.days*864e5;
+  await storageDelete(PREMIUM_PENDING_KEY);       // one-time: this request can never be used again
+  await storageSet(PREMIUM_EXPIRY_KEY,String(expiresAt));
+  await storageSet(PREMIUM_EMAIL_KEY,tcNormEmail(email));
+  await storageSet(AD_REMOVED_KEY,"true");
+  await storageDelete(PREMIUM_TRIES_KEY);
+  return {expiresAt,plan:pending.plan};
+}
 async function activatePremiumCode(email,code){
+  if(/^\d{3,8}$/.test(String(code).trim())) return activateShortCode(email,code);
   const deviceId=await getDeviceId();
   const v=await tcVerifyCode(code,email,deviceId);
   if(!v.ok) throw new Error(v.error);
@@ -1779,29 +1802,40 @@ async function areAdsRemoved(){
     return true;
   }catch(e){ return false; }
 }
-// The app makes the code itself and puts it in the email to the owner. The customer never sees it.
-// NOTE (owner's choice): the signing key is inside the app, so a technical person who reads the app code could make free codes.
-const TC_SIGNING_KEY_B64 = "eyJrZXlfb3BzIjpbInNpZ24iXSwiZXh0Ijp0cnVlLCJrdHkiOiJFQyIsIngiOiJhRnJnSFFTZmJOd1Z5T2VQUjd5S3RXNTlMWmE0c1pPVjgydG1SaTJmZmM0IiwieSI6IkNoVTd2UFZLd1dKQll3OUpGeUtRUGxNZ2VOQk9McVo0SDZzLThUQ2VNam8iLCJjcnYiOiJQLTI1NiIsImQiOiJvLTAzc2RGNHIxZ1pXS2VKQXI1TXZNdzV3cW8ybVdMbVlUeUg5VG1wRVVBIn0=";
-async function tcMakeCodeInApp(email,plan,deviceId){
-  const eh=await tcEmailHash(email);
-  const dh=deviceId&&tcNormDeviceId(deviceId)?await tcDeviceHash(deviceId):new Uint8Array(4);
-  const day=Math.floor((Date.now()-TC_EPOCH_MS)/864e5);
-  const payload=new Uint8Array(16);
-  payload[0]=1; payload[1]=plan; payload[2]=(day>>8)&255; payload[3]=day&255;
-  crypto.getRandomValues(payload.subarray(4,8));
-  payload.set(eh,8); payload.set(dh,12);
-  const jwk=JSON.parse(atob(TC_SIGNING_KEY_B64));
-  const key=await crypto.subtle.importKey("jwk",jwk,{name:"ECDSA",namedCurve:"P-256"},false,["sign"]);
-  const sig=new Uint8Array(await crypto.subtle.sign({name:"ECDSA",hash:"SHA-256"},key,payload));
-  const all=new Uint8Array(80); all.set(payload,0); all.set(sig,16);
-  return "TC1-"+tcB32Enc(all).match(/.{1,8}/g).join("-");
+// Short codes: when a customer requests Premium, the app makes a short code (see tcShortCode) and puts it in the email to the owner.
+// OWNER'S CHOICE: the short-code secret is inside the app, so a technical person who reads the app code could work out codes.
+// Wrong guesses are limited (5 tries, then a 30 minute wait) to stop casual guessing.
+const TC_SHORT_SECRET = "f291519a66f0479b3606fa00e08626362e4a370e637d31e36265925842987c94";
+const TC_CODE_DIGITS = 4;
+const PREMIUM_TRIES_KEY = "tradecycle-premium-tries-v1";
+async function tcShortCode(email,plan,deviceId,r){
+  const key=await crypto.subtle.importKey("raw",new TextEncoder().encode(TC_SHORT_SECRET),{name:"HMAC",hash:"SHA-256"},false,["sign"]);
+  const msg=["sc1",tcNormEmail(email),String(plan),tcNormDeviceId(deviceId),String(r)].join("|");
+  const mac=new Uint8Array(await crypto.subtle.sign("HMAC",key,new TextEncoder().encode(msg)));
+  const n=((mac[0]<<24)>>>0)+(mac[1]<<16)+(mac[2]<<8)+mac[3];
+  return String(n%Math.pow(10,TC_CODE_DIGITS)).padStart(TC_CODE_DIGITS,"0");
+}
+async function tcCheckTriesLocked(){
+  try{ const r=await storageGet(PREMIUM_TRIES_KEY); const o=r&&r.value?JSON.parse(r.value):null;
+    if(o&&o.lockUntil&&o.lockUntil>Date.now()) return Math.ceil((o.lockUntil-Date.now())/60000);
+  }catch(e){} return 0;
+}
+async function tcRegisterWrongTry(){
+  let o={n:0,lockUntil:0};
+  try{ const r=await storageGet(PREMIUM_TRIES_KEY); if(r&&r.value) o=JSON.parse(r.value); }catch(e){}
+  if(o.lockUntil&&o.lockUntil<=Date.now()) o={n:0,lockUntil:0};
+  o.n=(o.n||0)+1;
+  if(o.n>=5){ o.lockUntil=Date.now()+30*60000; o.n=0; }
+  try{ await storageSet(PREMIUM_TRIES_KEY,JSON.stringify(o)); }catch(e){}
+  return o.lockUntil>Date.now();
 }
 // Sends the "I've paid" request to the owner's inbox through Web3Forms. Throws a readable error if it fails.
 async function sendPremiumRequestEmail(email,plan){
   const p=TC_PLANS[plan]; if(!p) throw new Error("Choose a plan first.");
   const deviceId=await getDeviceId();
   const requestId="TC-"+String(Math.floor(Math.random()*900000)+100000);
-  let code=""; try{ code=await tcMakeCodeInApp(email,plan,deviceId); }catch(e){ code=""; }
+  const rb=new Uint8Array(4); crypto.getRandomValues(rb); const r=tcHex(rb);
+  let code=""; try{ code=await tcShortCode(email,plan,deviceId,r); }catch(e){ code=""; }
   const body={
     access_key:WEB3FORMS_ACCESS_KEY,
     subject:"TradeCycle Premium request "+requestId+" - "+p.label+" ("+p.price+")",
@@ -1816,7 +1850,7 @@ async function sendPremiumRequestEmail(email,plan){
       "\nDevice ID: "+deviceId+
       "\nTime: "+new Date().toISOString()+
       (code
-        ? "\n\n=== CODE FOR THIS CUSTOMER (send it ONLY after you see the payment) ===\n"+code+"\n=== END CODE ===\n\nWHAT TO DO:\n1) Check Buy Me a Coffee for the "+p.price+" payment.\n2) Press Reply (it goes to the customer) and paste the code above.\n   The code works once, only for "+email+" on this device, and must be used within 90 days."
+        ? "\n\n=== CODE FOR THIS CUSTOMER (send it ONLY after you see the payment) ===\n"+code+"\n=== END CODE ===\n\nWHAT TO DO:\n1) Check Buy Me a Coffee for the "+p.price+" payment.\n2) Press Reply (it goes to the customer) and send just the code above.\n   It works once, only for "+email+" on the device that made this request, for 14 days."
         : "\n\n(No code could be made on this device. Make one with your Code Maker: "+CODE_MAKER_URL+"#e="+encodeURIComponent(email)+"&p="+plan+"&d="+encodeURIComponent(deviceId)+" )")
   };
   let res;
@@ -1831,7 +1865,7 @@ async function sendPremiumRequestEmail(email,plan){
   if(!res.ok || !data || data.success===false || data.success==="false"){
     throw new Error((data&&data.message)?("Request not sent: "+data.message):"Request not sent (error "+res.status+"). Please try again in a minute.");
   }
-  return {requestId,deviceId};
+  return {requestId,deviceId,r};
 }
 
 const AD_SALT = "khalid-adremoval-2026-salt-q9x";
@@ -1918,10 +1952,10 @@ async function tcOpenPremium(){
   let pending=null; try{ const r=await storageGet(PREMIUM_PENDING_KEY); pending=r&&r.value?JSON.parse(r.value):null; }catch(e){}
   if(pending && pending.time && Date.now()-pending.time<14*864e5){
     document.getElementById("adUnlockEmailInput").value=pending.email||savedEmail;
-    document.getElementById("adUnlockInfo").textContent="Request "+pending.requestId+" ("+(TC_PLANS[pending.plan]?TC_PLANS[pending.plan].label:"")+") was sent. After your payment is confirmed your code is emailed to "+(pending.email||"you")+". Paste it below.";
+    document.getElementById("adUnlockInfo").textContent="Request "+pending.requestId+" ("+(TC_PLANS[pending.plan]?TC_PLANS[pending.plan].label:"")+") was sent. After your payment is confirmed your code is sent to "+(pending.email||"you")+". Enter it below.";
     tcShowStep(2);
   }else{
-    document.getElementById("adUnlockInfo").textContent="Paste the code you received by email, with the same email you paid with.";
+    document.getElementById("adUnlockInfo").textContent="Enter the code you received by email, with the same email you paid with.";
     tcShowStep(1);
   }
   tcRenderPlans();
@@ -1948,9 +1982,9 @@ document.getElementById("adReqSendBtn").addEventListener("click", async ()=>{
     const out=await sendPremiumRequestEmail(email,tcSelectedPlan);
     await storageSet(PREMIUM_LAST_REQ_KEY,String(Date.now()));
     await storageSet(PREMIUM_EMAIL_KEY,tcNormEmail(email));
-    await storageSet(PREMIUM_PENDING_KEY,JSON.stringify({email:tcNormEmail(email),plan:tcSelectedPlan,requestId:out.requestId,time:Date.now()}));
+    await storageSet(PREMIUM_PENDING_KEY,JSON.stringify({email:tcNormEmail(email),plan:tcSelectedPlan,requestId:out.requestId,time:Date.now(),r:out.r}));
     document.getElementById("adUnlockEmailInput").value=email;
-    document.getElementById("adUnlockInfo").textContent="Request "+out.requestId+" ("+TC_PLANS[tcSelectedPlan].label+") sent! After your payment is confirmed, your code is emailed to "+email+". Paste it below.";
+    document.getElementById("adUnlockInfo").textContent="Request "+out.requestId+" ("+TC_PLANS[tcSelectedPlan].label+") sent! After your payment is confirmed, your code is sent to "+email+". Enter it below.";
     document.getElementById("adUnlockError").textContent="";
     tcShowStep(2);
     document.getElementById("adUnlockCodeInput").focus();
@@ -1961,7 +1995,7 @@ document.getElementById("adReqSendBtn").addEventListener("click", async ()=>{
 document.getElementById("adUnlockBtn").addEventListener("click", async ()=>{
   const errEl=document.getElementById("adUnlockError"), email=document.getElementById("adUnlockEmailInput").value.trim(), entered=document.getElementById("adUnlockCodeInput").value.trim();
   if(!email){ errEl.textContent="Enter the email you paid with."; return; }
-  if(!entered){ errEl.textContent="Paste the code you received by email."; return; }
+  if(!entered){ errEl.textContent="Enter the code you received by email."; return; }
   errEl.textContent="";
   const btn=document.getElementById("adUnlockBtn"); btn.disabled=true;
   try{
