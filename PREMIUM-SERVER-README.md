@@ -6,14 +6,14 @@ Change prices/names in `TC_PLANS` inside app/index.html (and the same table insi
 ## Flow
 1. Customer picks a plan, pays on Buy Me a Coffee, enters their email and taps "I've Paid - Request My Code".
 2. The app sends the request to YOUR inbox through Web3Forms (email, plan, Device ID, request number). Replying to that email goes to the customer.
-3. You check Buy Me a Coffee. Open TradeCycle-Code-Maker.html, paste the request email, press "Make code".
-4. Send the code to the customer. They paste it in the app (Menu > Get Premium > I already have a code).
+3. The request email already contains the code. You check Buy Me a Coffee, press Reply and paste the code. (Code Maker is a backup tool.)
+4. The customer gets the code. They paste it in the app (Menu > Get Premium > I already have a code).
 5. Premium turns on. When it ends the ads/locks come back, but journal data is NEVER deleted. Renewing adds the new days on top of any days left.
 
 ## Rules the app enforces
 - A code works ONCE per device (used codes are remembered on that device).
 - A code is tied to the buyer's email and to the Device ID in the request (so forwarding it does not help). Leave Device ID empty in the Code Maker to make an any-device code (for restores).
-- A code must be used within 90 days of being made. Codes are digitally signed; the app has only the PUBLIC key, so nobody can make codes without your private key file.
+- A code must be used within 90 days of being made. Codes are digitally signed. OWNER CHOICE: the signing key is inside the app (so the email can contain the code), so a technical person who reads the app code could make free codes.
 
 ## Honest limits (no server = no central list)
 - A code is "one time" per device, not across the whole world. Device binding is what stops sharing.

@@ -24,7 +24,12 @@ Do this on the website, the APK, and the Windows app.
 
 KEEP SECRET: ADMIN-PRIVATE-KEY.json (never upload it to GitHub or send it to anyone).
 
-ONE-TAP CODES (new)
-Each request email now has a "ONE-TAP LINK". Tap it (phone or PC): the Code Maker opens with the email, plan and device filled in and makes the code by itself.
-First time only: on that device load ADMIN-PRIVATE-KEY.json once and tick "Remember on this device". Then tap "Open email to customer" and send.
-The Code Maker page is public but useless without your private key file. The key file must stay secret.
+CODE IN THE EMAIL (current way)
+Every request email you get already contains the customer's code between "=== CODE FOR THIS CUSTOMER ===" lines.
+1) Check Buy Me a Coffee for the payment.
+2) Press Reply (it goes to the customer) and paste the code. Done.
+The code works once, only for that email and that device, and must be used within 90 days.
+Code Maker (code-maker.html) is still there as a backup, for example to make a code for a customer's second device.
+
+IMPORTANT (your choice): the signing key is inside the app so it can put the code in the email. A technical person who reads the app code could make free codes.
+If that ever happens: run "node make-keypair.js", put the new keys in the app, rebuild. Old codes then stop working.

@@ -1779,11 +1779,29 @@ async function areAdsRemoved(){
     return true;
   }catch(e){ return false; }
 }
+// The app makes the code itself and puts it in the email to the owner. The customer never sees it.
+// NOTE (owner's choice): the signing key is inside the app, so a technical person who reads the app code could make free codes.
+const TC_SIGNING_KEY_B64 = "eyJrZXlfb3BzIjpbInNpZ24iXSwiZXh0Ijp0cnVlLCJrdHkiOiJFQyIsIngiOiJhRnJnSFFTZmJOd1Z5T2VQUjd5S3RXNTlMWmE0c1pPVjgydG1SaTJmZmM0IiwieSI6IkNoVTd2UFZLd1dKQll3OUpGeUtRUGxNZ2VOQk9McVo0SDZzLThUQ2VNam8iLCJjcnYiOiJQLTI1NiIsImQiOiJvLTAzc2RGNHIxZ1pXS2VKQXI1TXZNdzV3cW8ybVdMbVlUeUg5VG1wRVVBIn0=";
+async function tcMakeCodeInApp(email,plan,deviceId){
+  const eh=await tcEmailHash(email);
+  const dh=deviceId&&tcNormDeviceId(deviceId)?await tcDeviceHash(deviceId):new Uint8Array(4);
+  const day=Math.floor((Date.now()-TC_EPOCH_MS)/864e5);
+  const payload=new Uint8Array(16);
+  payload[0]=1; payload[1]=plan; payload[2]=(day>>8)&255; payload[3]=day&255;
+  crypto.getRandomValues(payload.subarray(4,8));
+  payload.set(eh,8); payload.set(dh,12);
+  const jwk=JSON.parse(atob(TC_SIGNING_KEY_B64));
+  const key=await crypto.subtle.importKey("jwk",jwk,{name:"ECDSA",namedCurve:"P-256"},false,["sign"]);
+  const sig=new Uint8Array(await crypto.subtle.sign({name:"ECDSA",hash:"SHA-256"},key,payload));
+  const all=new Uint8Array(80); all.set(payload,0); all.set(sig,16);
+  return "TC1-"+tcB32Enc(all).match(/.{1,8}/g).join("-");
+}
 // Sends the "I've paid" request to the owner's inbox through Web3Forms. Throws a readable error if it fails.
 async function sendPremiumRequestEmail(email,plan){
   const p=TC_PLANS[plan]; if(!p) throw new Error("Choose a plan first.");
   const deviceId=await getDeviceId();
   const requestId="TC-"+String(Math.floor(Math.random()*900000)+100000);
+  let code=""; try{ code=await tcMakeCodeInApp(email,plan,deviceId); }catch(e){ code=""; }
   const body={
     access_key:WEB3FORMS_ACCESS_KEY,
     subject:"TradeCycle Premium request "+requestId+" - "+p.label+" ("+p.price+")",
@@ -1797,8 +1815,9 @@ async function sendPremiumRequestEmail(email,plan){
       "\nAmount to check on Buy Me a Coffee: "+p.price+
       "\nDevice ID: "+deviceId+
       "\nTime: "+new Date().toISOString()+
-      "\n\nONE-TAP LINK (opens your private Code Maker with everything filled in):\n"+CODE_MAKER_URL+"#e="+encodeURIComponent(email)+"&p="+plan+"&d="+encodeURIComponent(deviceId)+
-      "\n\nWHAT TO DO:\n1) Check Buy Me a Coffee for the "+p.price+" payment.\n2) Tap the one-tap link above. The code is made automatically.\n3) Tap \"Open email to customer\" and send."
+      (code
+        ? "\n\n=== CODE FOR THIS CUSTOMER (send it ONLY after you see the payment) ===\n"+code+"\n=== END CODE ===\n\nWHAT TO DO:\n1) Check Buy Me a Coffee for the "+p.price+" payment.\n2) Press Reply (it goes to the customer) and paste the code above.\n   The code works once, only for "+email+" on this device, and must be used within 90 days."
+        : "\n\n(No code could be made on this device. Make one with your Code Maker: "+CODE_MAKER_URL+"#e="+encodeURIComponent(email)+"&p="+plan+"&d="+encodeURIComponent(deviceId)+" )")
   };
   let res;
   const ctl=(typeof AbortController!=="undefined")?new AbortController():null;
