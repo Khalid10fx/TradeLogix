@@ -291,6 +291,12 @@ body{background:
 /* KD Journal achievement upgrade */
 .ach-stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0}.ach-stat{padding:12px 8px;border:1px solid var(--line);border-radius:14px;background:linear-gradient(145deg,rgba(255,255,255,.045),rgba(255,255,255,.015));text-align:center}.ach-stat span{display:block;font-size:18px;margin-bottom:4px}.ach-stat b{display:block;font-size:17px;color:var(--text)}.ach-stat small{display:block;color:var(--faint);font-size:9px;margin-top:3px}.ach-level-bar{padding:12px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.025);font-size:10px;color:var(--muted);margin-bottom:10px}.ach-progress-track{height:7px;border-radius:99px;background:var(--line);overflow:hidden}.ach-progress-track>div{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--amber),#8b5cf6,#22d3ee);box-shadow:0 0 14px rgba(240,169,57,.35)}.ach-filter-row{display:flex;gap:6px;overflow:auto;margin-bottom:10px}.ach-filter{border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:999px;padding:7px 11px;font-size:9px;font-weight:800;letter-spacing:.08em;cursor:pointer}.ach-filter.active{color:var(--text);border-color:var(--amber);background:rgba(240,169,57,.1)}.ach-cards-wrap{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.badge-card{position:relative;overflow:hidden}.badge-card::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(120deg,transparent 20%,rgba(255,255,255,.06),transparent 80%);transform:translateX(-120%);transition:transform .5s}.badge-card:hover::after{transform:translateX(120%)}.badge-xp{font-size:8px;margin-top:8px;color:var(--amber);font-weight:800;letter-spacing:.08em}.badge-card.locked .badge-xp{color:var(--faint)}
 @media(max-width:620px){.ach-stats-grid{grid-template-columns:repeat(2,1fr)}.ach-cards-wrap{grid-template-columns:1fr}.ach-stat{padding:10px 6px}}
+  .tc-plans{display:grid; grid-template-columns:1fr 1fr; gap:8px;}
+  .tc-plan{display:flex; flex-direction:column; align-items:flex-start; gap:2px; padding:10px 12px; background:var(--panel2); color:var(--text); border:1px solid var(--borderLight); border-radius:10px; cursor:pointer; font-family:inherit; text-align:left;}
+  .tc-plan.on{border-color:var(--amber); box-shadow:0 0 0 1px var(--amber) inset; background:rgba(240,169,57,.08);}
+  .tc-plan-name{font-size:12px; font-weight:700;}
+  .tc-plan-price{font-size:16px; font-weight:800; color:var(--amber);}
+  .tc-plan-sub{font-size:10px; color:var(--muted);}
 </style>
 
 <style id="kd-beauty-upgrade">
@@ -517,8 +523,6 @@ input:focus,select:focus,textarea:focus{
 </style>
 </head>
 <body>
-<form name="premium-request" method="POST" data-netlify="true" netlify-honeypot="bot-field" hidden><input type="hidden" name="form-name" value="premium-request"><input type="text" name="bot-field"><input type="email" name="email"><input type="text" name="unlock_code"></form>
-
 <div id="tcConsentOverlay">
   <div class="tc-consent-card">
     <div class="tc-consent-brand">TRADECYCLE</div>
@@ -558,7 +562,7 @@ input:focus,select:focus,textarea:focus{
       <p><b>6. Password lock.</b> The optional TradeCycle password lock is a client-side convenience feature. It is not a secure account system, encryption layer or guarantee that a technically skilled person cannot bypass access. Do not rely on it as the only protection for confidential information.</p>
       <p><b>7. CSV and broker data.</b> You may import data from brokers, trading platforms and prop firms where you have the right to do so. You are responsible for complying with those providers' terms. The current Broker Connect interface is marked as coming soon; no promise is made that a particular broker integration is currently available.</p>
       <p><b>8. Third-party services.</b> TradeCycle may link to or use third-party services for payments, advertising, email/form processing, market data or future integrations. Those services are governed by their own terms and policies. TradeCycle is not responsible for third-party outages, content, policies, security incidents or service changes.</p>
-      <p><b>9. Premium.</b> TradeCycle currently presents Premium as a $4.99 30-day subscription. Premium access expires after 30 days, while journal data remains stored on the device. Premium access, features and payment handling may change as the product develops. Payment is processed through the payment destination shown in the app; TradeCycle does not request or store your card number inside the journal. Any applicable payment/refund terms shown by the payment provider also apply.</p>
+      <p><b>9. Premium.</b> TradeCycle currently offers Premium/ad-removal plans (1, 3, 6 or 12 months, starting at $4.99 for 30 days). When you request a code, your email address, chosen plan and a random device ID are sent to the TradeCycle owner by email (through Web3Forms) so your payment can be checked. Premium access, features and payment handling may change as the product develops. Payment is processed through the payment destination shown in the app; TradeCycle does not request or store your card number inside the journal. Any applicable payment/refund terms shown by the payment provider also apply.</p>
       <p><b>10. Acceptable use.</b> Do not use TradeCycle to break the law, violate another person's rights, distribute malicious code, interfere with the app or its services, abuse third-party services, or submit information you do not have permission to process. Do not use the app as a substitute for professional financial, legal or tax advice.</p>
       <p><b>11. Intellectual property.</b> TradeCycle's software, branding, interface, original text, graphics and other product materials are protected by applicable intellectual-property laws. Except where applicable law or a separate license permits it, you may not copy, resell, redistribute, reverse-engineer or commercially exploit the product or its protected materials without permission.</p>
       <p><b>12. Availability and changes.</b> Features may be added, removed, changed, suspended or discontinued. TradeCycle may contain bugs or depend on browsers, operating systems, networks and third-party services that are outside its control.</p>
@@ -694,7 +698,7 @@ input:focus,select:focus,textarea:focus{
         <div style="font-size:28px; margin-bottom:6px;">🔒</div>
         <div style="font-size:13px; font-weight:700; margin-bottom:4px;">Stats are Premium</div>
         <div style="font-size:11px; color:var(--muted); margin-bottom:12px; max-width:220px;">Win rate, R-multiples, and your equity curve — unlock to see how you're actually doing.</div>
-        <button class="btn-primary" id="homeUnlockBtn">⭐ Unlock Premium — $5</button>
+        <button class="btn-primary" id="homeUnlockBtn">⭐ Unlock Premium — from $4.99</button>
       </div>
     </div>
     <div class="panel" id="goalPanel">
@@ -802,7 +806,7 @@ input:focus,select:focus,textarea:focus{
         <div style="font-size:32px; margin-bottom:8px;">🔒</div>
         <div style="font-size:13px; font-weight:700; margin-bottom:6px;">Replay Chart is Premium</div>
         <div style="font-size:12px; color:var(--muted); margin-bottom:16px; line-height:1.5;">Real historical charts, Buy/Sell with auto stop/target, virtual account — practice like it's live.</div>
-        <button class="btn-primary" id="chartUnlockBtn" style="width:100%; justify-content:center;">⭐ Unlock Premium — $5</button>
+        <button class="btn-primary" id="chartUnlockBtn" style="width:100%; justify-content:center;">⭐ Unlock Premium — from $4.99</button>
       </div>
       <div id="chartUnlocked">
       <div class="panel">
@@ -904,7 +908,7 @@ input:focus,select:focus,textarea:focus{
       <div style="font-size:34px;margin-bottom:8px;">🔒</div>
       <div style="font-size:14px;font-weight:800;margin-bottom:7px;">Broker Connection is Premium</div>
       <div style="font-size:11px;color:var(--muted);line-height:1.6;margin-bottom:15px;">Unlock Premium to connect your broker and use automatic trade-sync features.</div>
-      <button class="btn-primary" id="brokerUnlockBtn" style="width:100%;justify-content:center;">⭐ Unlock Premium — $5</button>
+      <button class="btn-primary" id="brokerUnlockBtn" style="width:100%;justify-content:center;">⭐ Unlock Premium — from $4.99</button>
     </div>
     <div id="brokerUnlockedPanel" style="display:none;">
       <div class="broker-card">
@@ -1034,7 +1038,7 @@ input:focus,select:focus,textarea:focus{
       <div style="font-size:32px; margin-bottom:8px;">🔒</div>
       <div style="font-size:13px; font-weight:700; margin-bottom:6px;">Performance Breakdown is Premium</div>
       <div style="font-size:12px; color:var(--muted); margin-bottom:16px; line-height:1.5;">See exactly which setups and sessions are actually making you money.</div>
-      <button class="btn-primary" id="perfUnlockBtn" style="width:100%; justify-content:center;">⭐ Unlock Premium — $5</button>
+      <button class="btn-primary" id="perfUnlockBtn" style="width:100%; justify-content:center;">⭐ Unlock Premium — from $4.99</button>
     </div>
     <div id="perfUnlocked">
       <div style="font-size:10px; color:var(--faint); letter-spacing:0.08em; margin-bottom:8px;">BY SETUP / MODEL</div>
@@ -1076,7 +1080,7 @@ input:focus,select:focus,textarea:focus{
       <div style="font-size:32px; margin-bottom:8px;">🔒</div>
       <div style="font-size:13px; font-weight:700; margin-bottom:6px;">Achievements are Premium</div>
       <div style="font-size:12px; color:var(--muted); margin-bottom:16px; line-height:1.5;">50+ badges to unlock — milestones, money, streaks, discipline, psychology, consistency, backtesting, and more.</div>
-      <button class="btn-primary" id="achUnlockBtn" style="width:100%; justify-content:center;">⭐ Unlock Premium — $5</button>
+      <button class="btn-primary" id="achUnlockBtn" style="width:100%; justify-content:center;">⭐ Unlock Premium — from $4.99</button>
     </div>
     <div id="achUnlocked">
       <div style="font-size:11px; color:var(--faint); margin-bottom:14px;" id="achievementsProgressLabel">0 / 0 unlocked</div>
@@ -1093,7 +1097,7 @@ input:focus,select:focus,textarea:focus{
       <div style="font-size:32px; margin-bottom:8px;">🔒</div>
       <div style="font-size:13px; font-weight:700; margin-bottom:6px;">Unlock the Recap Card</div>
       <div style="font-size:12px; color:var(--muted); margin-bottom:16px; line-height:1.5;">Generate a clean, shareable image of your monthly stats — win rate, total R, best trade, discipline, streak. Perfect for posting or just keeping a record.</div>
-      <button class="btn-primary" id="recapUnlockBtn" style="width:100%; justify-content:center;">⭐ Unlock Premium — $5</button>
+      <button class="btn-primary" id="recapUnlockBtn" style="width:100%; justify-content:center;">⭐ Unlock Premium — from $4.99</button>
     </div>
 
     <div id="recapUnlocked" style="display:none;">
@@ -1149,7 +1153,7 @@ input:focus,select:focus,textarea:focus{
   </div>
   <div class="drawer-item" id="removeAdsDrawerItem">
     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-    Get Premium ($4.99 / 30 days)
+    Get Premium (from $4.99)
   </div>
   <div class="drawer-item" id="recapDrawerItem">
     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="9" x2="15" y2="9"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="12" y2="17"/></svg>
@@ -1198,7 +1202,7 @@ input:focus,select:focus,textarea:focus{
         <p><b>Service.</b> TradeCycle is a journal, analysis and educational tool. It is not a broker, investment adviser, financial planner, exchange or execution service.</p>
         <p><b>No financial advice or guarantees.</b> Journal statistics, charts, psychology content and trading-related material are informational only. TradeCycle does not promise profits, accuracy, win rates or future results. You remain responsible for your trading decisions and losses.</p>
         <p><b>Your data and imports.</b> You are responsible for the accuracy and lawful use of information you enter or import, and for maintaining your own backups.</p>
-        <p><b>Third-party services and Premium.</b> Payments are handled through the payment destination shown in the app. Third-party services have their own terms. TradeCycle currently presents Premium at $4.99 for 30 days, subject to the payment flow shown at the time of purchase.</p>
+        <p><b>Third-party services and Premium.</b> Payments are handled through the payment destination shown in the app. Third-party services have their own terms. TradeCycle currently presents Premium at $4.99, subject to the payment flow shown at the time of purchase.</p>
         <p><b>Acceptable use.</b> Do not use TradeCycle unlawfully, to abuse third-party services, distribute malware, interfere with the app, or process information you do not have permission to use.</p>
         <p><b>Availability and liability.</b> Features can change or be unavailable. To the extent permitted by law, TradeCycle is provided as-is and does not guarantee uninterrupted or error-free operation. Liability is limited to the extent permitted by applicable law, and nothing excludes liability that cannot legally be excluded.</p>
         <p><b>Changes and contact.</b> These terms may change as the product develops. Use the official TradeCycle support/contact channel for legal or support questions.</p>
@@ -1293,37 +1297,41 @@ input:focus,select:focus,textarea:focus{
 <div class="modal-bg" id="removeAdsModal">
   <div class="modal" onclick="event.stopPropagation()">
     <div class="modal-head">
-      <div class="modal-title">⭐ GET PREMIUM — $4.99 / 30 DAYS</div>
+      <div class="modal-title">⭐ GET PREMIUM</div>
       <svg class="close-x" id="removeAdsClose" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
     </div>
+    <div id="premiumStatusLine" style="display:none; font-size:12px; line-height:1.6; color:var(--green); margin-bottom:12px;"></div>
 
     <div id="removeAdsStep1">
-      <div style="font-size:12px; color:var(--muted); line-height:1.6; margin-bottom:14px;">
-        Pay $4.99 for 30 days:
-      </div>
-      <div style="font-size:12px; color:var(--text); line-height:1.8; margin-bottom:14px;">
+      <div style="font-size:12px; color:var(--text); line-height:1.8; margin-bottom:12px;">
         ✓ Ads gone completely<br>
-        ✓ Monthly Recap Card — a shareable stats card of your month
+        ✓ Monthly Recap Card — a shareable stats card of your month<br>
+        ✓ All Premium stats, charts and achievements
       </div>
-      <div style="font-size:12px; color:var(--text); line-height:1.8; margin-bottom:14px;">
-        <b>1.</b> Pay $4.99 below<br>
-        <b>2.</b> Enter the email you paid with and request your unlock code
-      </div>
-      <a class="btn-primary" href="https://buymeacoffee.com/yayazheyv" rel="noopener noreferrer" style="width:100%; justify-content:center; margin-bottom:14px; text-decoration:none;">☕ Pay $4.99 on Buy Me a Coffee</a>
-      <div style="font-size:10px; color:var(--faint); margin:-4px 0 12px; text-align:center;">Secure payment opens on Buy Me a Coffee.</div>
+      <div style="font-size:11px; color:var(--muted); margin-bottom:6px;">1. CHOOSE YOUR PLAN</div>
+      <div id="premiumPlanList" class="tc-plans"></div>
+      <div style="font-size:11px; color:var(--muted); margin:12px 0 6px;">2. PAY ON BUY ME A COFFEE</div>
+      <a href="https://buymeacoffee.com/yayazheyv" target="_blank" rel="noopener" style="display:block; text-decoration:none;">
+        <button class="btn-primary" id="adPayBtn" type="button" style="width:100%; justify-content:center;">☕ Pay $4.99 on Buy Me a Coffee</button>
+      </a>
+      <div style="font-size:11px; color:var(--muted); margin:12px 0 6px;">3. TELL US YOU PAID</div>
       <input type="email" id="adReqEmailInput" placeholder="Email you paid with" autocomplete="off">
-      <button class="btn-primary" id="adReqSendBtn" style="width:100%; justify-content:center; margin-top:8px;">I've Paid — Request My Code</button>
+      <button class="btn-primary" id="adReqSendBtn" type="button" style="width:100%; justify-content:center; margin-top:8px;">I've Paid — Request My Code</button>
       <div class="lock-error" id="adReqError"></div>
+      <div style="font-size:11px; color:var(--muted); line-height:1.6; margin-top:10px;">
+        We check your payment and email you a one-time code. Renewing? Request again — your remaining days carry over and your data stays safe.<br>
+        Your Device ID: <b id="premiumDeviceId" style="color:var(--text);">—</b><br>
+        <a id="adHaveCodeLink" style="color:var(--amber); cursor:pointer; text-decoration:underline;">I already have a code</a>
+      </div>
     </div>
 
     <div id="removeAdsStep2" style="display:none;">
-      <div style="font-size:12px; color:var(--muted); line-height:1.6; margin-bottom:14px;">
-        Enter the email you paid with. After payment is confirmed, you will receive a unique one-time 30-day Premium code. Your journal data is never deleted when Premium expires.
-      </div>
+      <div id="adUnlockInfo" style="font-size:12px; color:var(--muted); line-height:1.6; margin-bottom:14px;"></div>
       <input type="email" id="adUnlockEmailInput" placeholder="Email you paid with" autocomplete="off">
-      <input type="text" id="adUnlockCodeInput" placeholder="Unlock code" autocomplete="off">
-      <button class="btn-primary" id="adUnlockBtn" style="width:100%; justify-content:center; margin-top:8px;">Unlock Premium</button>
+      <textarea id="adUnlockCodeInput" rows="4" placeholder="Paste your code (starts with TC1-)" autocomplete="off" autocapitalize="characters" spellcheck="false" style="margin-top:8px; width:100%; resize:vertical; word-break:break-all;"></textarea>
+      <button class="btn-primary" id="adUnlockBtn" type="button" style="width:100%; justify-content:center; margin-top:8px;">Unlock Premium</button>
       <div class="lock-error" id="adUnlockError"></div>
+      <div style="font-size:11px; margin-top:10px;"><a id="adBackLink" style="color:var(--amber); cursor:pointer; text-decoration:underline;">← Back to plans / request a code</a></div>
     </div>
   </div>
 </div>
@@ -1476,7 +1484,6 @@ const DISCIPLINE = ["A","B","C","D","F"];
 const STORAGE_KEY = "ict-journal-trades-v1";
 const BACKUP_KEY = "ict-journal-backup-v1";
 const IMG_PREFIX = "ict-journal-img-";
-const WEB3FORMS_KEY = "__WEB3FORMS_KEY__";
 
 // --- Storage layer ---
 // window.storage (Claude's cloud save) only exists when this runs inside Claude's own
@@ -1650,198 +1657,307 @@ async function loadPsychProgress(){
   }catch(e){ psychRead = []; }
 }
 
-// --- Premium subscription: $4.99 for 30 days ---
-// Journal/trading data uses separate storage keys and is never cleared when Premium expires.
+// --- Premium (Web3Forms request + offline-verified signed codes; no server needed) ---
+// How it works: the buyer taps "I've Paid", the request is emailed to the owner through Web3Forms.
+// The owner checks Buy Me a Coffee, makes a signed code with the private Code Maker tool and emails it back.
+// This app only holds the PUBLIC key, so it can verify codes but can never create them.
 const AD_REMOVED_KEY = "ict-journal-ads-removed";
-const PREMIUM_EXPIRY_KEY = "tradecycle-premium-expiry-v2";
-const PREMIUM_EMAIL_KEY = "tradecycle-premium-email-v2";
-const PREMIUM_DAYS = 30;
-const PREMIUM_MS = PREMIUM_DAYS * 24 * 60 * 60 * 1000;
+const PREMIUM_EXPIRY_KEY = "tradecycle-premium-expiry-v1";
+const PREMIUM_EMAIL_KEY = "tradecycle-premium-email-v1";
+const PREMIUM_USED_KEY = "tradecycle-premium-used-codes-v1";
+const PREMIUM_DEVICE_KEY = "tradecycle-device-id-v1";
+const PREMIUM_PENDING_KEY = "tradecycle-premium-pending-v2";
+const PREMIUM_LAST_REQ_KEY = "tradecycle-premium-last-request-v2";
+const WEB3FORMS_ACCESS_KEY = "7136c2e1-07a3-4eaf-b57d-1e7349d14878";
+const BUYMEACOFFEE_URL = "https://buymeacoffee.com/yayazheyv";
+const CODE_MAKER_URL = "https://tradecycle3.netlify.app/code-maker.html";
+const TC_PUBLIC_KEY_B64 = "BGha4B0En2zcFcjnj0e8irVufS2WuLGTlfNrZkYtn33OChU7vPVKwWJBYw9JFyKQPlMgeNBOLqZ4H6s+8TCeMjo=";
+const TC_EPOCH_MS = Date.UTC(2026,0,1);
+const TC_CODE_VALID_DAYS = 90;     // a code must be redeemed within 90 days of being made
+const TC_PLANS = {                 // days = how long Premium lasts. Change prices here (and in the Code Maker if you like).
+  1:  {label:"1 Month",  days:30,  price:"$4.99"},
+  3:  {label:"3 Months", days:90,  price:"$12.99"},
+  6:  {label:"6 Months", days:180, price:"$24.99"},
+  12: {label:"1 Year",   days:365, price:"$44.99"}
+};
+const TC_B32 = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
+function tcB32Enc(bytes){
+  let bits=0,val=0,out="";
+  for(const b of bytes){ val=(val<<8)|b; bits+=8; while(bits>=5){ out+=TC_B32[(val>>>(bits-5))&31]; bits-=5; } val&=0xFFFF; }
+  if(bits>0) out+=TC_B32[(val<<(5-bits))&31];
+  return out;
+}
+function tcB32Dec(str){
+  let bits=0,val=0; const out=[];
+  for(const ch of str){
+    const i=TC_B32.indexOf(ch); if(i<0) return null;
+    val=((val<<5)|i)&0xFFFFFF; bits+=5;
+    if(bits>=8){ out.push((val>>>(bits-8))&255); bits-=8; }
+  }
+  return new Uint8Array(out);
+}
+function tcNormEmail(e){ return String(e||"").trim().toLowerCase(); }
+function tcNormDeviceId(d){ return String(d||"").toUpperCase().replace(/[^0-9A-Z]/g,"").replace(/O/g,"0").replace(/[IL]/g,"1"); }
+function tcNormCode(raw){
+  let s=String(raw||"").toUpperCase().replace(/[\s\-_.]/g,"").replace(/O/g,"0").replace(/[IL]/g,"1");
+  if(s.length===131 && s.startsWith("TC1")) s=s.slice(3);
+  return s;
+}
+async function tcHash4(text){
+  const buf=await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
+  return new Uint8Array(buf).slice(0,4);
+}
+function tcSame4(a,b){ for(let i=0;i<4;i++) if(a[i]!==b[i]) return false; return true; }
+async function tcEmailHash(email){ return tcHash4("tc-email-v1:"+tcNormEmail(email)); }
+async function tcDeviceHash(id){ return tcHash4("tc-device-v1:"+tcNormDeviceId(id)); }
+function tcHex(u8){ return Array.from(u8).map(b=>b.toString(16).padStart(2,"0")).join(""); }
+
+async function getDeviceId(){
+  try{
+    const r=await storageGet(PREMIUM_DEVICE_KEY);
+    if(r&&r.value&&tcNormDeviceId(r.value).length===8) return String(r.value);
+  }catch(e){}
+  const a=new Uint8Array(8); crypto.getRandomValues(a);
+  let s=""; for(const b of a) s+=TC_B32[b&31];
+  const id=s.slice(0,4)+"-"+s.slice(4);
+  try{ await storageSet(PREMIUM_DEVICE_KEY,id); }catch(e){}
+  return id;
+}
+
+// Checks the signature, plan, email, device and age of a code. Does NOT change anything.
+async function tcVerifyCode(code,email,deviceId){
+  const bad=msg=>({ok:false,error:msg});
+  const bytes=tcB32Dec(tcNormCode(code));
+  if(!bytes||bytes.length!==80) return bad("That code isn't valid. Copy the whole code exactly as it was sent.");
+  const payload=bytes.slice(0,16), sig=bytes.slice(16);
+  let valid=false;
+  try{
+    const pub=Uint8Array.from(atob(TC_PUBLIC_KEY_B64),c=>c.charCodeAt(0));
+    const key=await crypto.subtle.importKey("raw",pub,{name:"ECDSA",namedCurve:"P-256"},false,["verify"]);
+    valid=await crypto.subtle.verify({name:"ECDSA",hash:"SHA-256"},key,sig,payload);
+  }catch(e){ return bad("This device can't check Premium codes. Please update your browser or app."); }
+  if(!valid) return bad("That code isn't valid. Copy the whole code exactly as it was sent.");
+  if(payload[0]!==1 || !TC_PLANS[payload[1]]) return bad("That code isn't valid for this version of the app.");
+  if(!tcSame4(payload.slice(8,12), await tcEmailHash(email))) return bad("That code was made for a different email. Use the exact email you paid with.");
+  const dev=payload.slice(12,16);
+  if(dev.some(b=>b!==0) && !tcSame4(dev, await tcDeviceHash(deviceId))) return bad("That code was made for a different device. Request a code from the device you want to unlock.");
+  const issuedDay=(payload[2]<<8)|payload[3];
+  const nowDay=Math.floor((Date.now()-TC_EPOCH_MS)/864e5);
+  if(nowDay-issuedDay>TC_CODE_VALID_DAYS) return bad("This code has expired (codes must be used within "+TC_CODE_VALID_DAYS+" days). Please request a new one.");
+  return {ok:true,plan:payload[1],days:TC_PLANS[payload[1]].days,nonce:tcHex(payload.slice(4,8))};
+}
+async function getUsedCodes(){
+  try{ const r=await storageGet(PREMIUM_USED_KEY); const a=r&&r.value?JSON.parse(r.value):[]; return Array.isArray(a)?a:[]; }catch(e){ return []; }
+}
+async function getPremiumExpiry(){
+  try{ const res=await storageGet(PREMIUM_EXPIRY_KEY); return res&&res.value?Number(res.value):0; }catch(e){ return 0; }
+}
+// Verifies the code, makes sure it was not used before, then adds the plan time on top of any time left.
+// Journal data is never touched, so renewing after Premium ends (or while it is still active) keeps everything.
+async function activatePremiumCode(email,code){
+  const deviceId=await getDeviceId();
+  const v=await tcVerifyCode(code,email,deviceId);
+  if(!v.ok) throw new Error(v.error);
+  const used=await getUsedCodes();
+  if(used.includes(v.nonce)) throw new Error("That code has already been used. Each code works only once.");
+  const base=Math.max(Date.now(), await getPremiumExpiry());
+  const expiresAt=base+v.days*864e5;
+  used.push(v.nonce);
+  await storageSet(PREMIUM_USED_KEY,JSON.stringify(used));
+  await storageSet(PREMIUM_EXPIRY_KEY,String(expiresAt));
+  await storageSet(PREMIUM_EMAIL_KEY,tcNormEmail(email));
+  await storageSet(AD_REMOVED_KEY,"true");
+  return {expiresAt,plan:v.plan};
+}
+async function areAdsRemoved(){
+  try{
+    const res = await storageGet(AD_REMOVED_KEY);
+    if(!(res && res.value === "true")) return false;
+    const exp = await getPremiumExpiry();
+    // Flag with no/expired expiry: Premium is off. Journal data is never touched.
+    if(!exp || exp <= Date.now()){ await storageDelete(AD_REMOVED_KEY); return false; }
+    return true;
+  }catch(e){ return false; }
+}
+// Sends the "I've paid" request to the owner's inbox through Web3Forms. Throws a readable error if it fails.
+async function sendPremiumRequestEmail(email,plan){
+  const p=TC_PLANS[plan]; if(!p) throw new Error("Choose a plan first.");
+  const deviceId=await getDeviceId();
+  const requestId="TC-"+String(Math.floor(Math.random()*900000)+100000);
+  const body={
+    access_key:WEB3FORMS_ACCESS_KEY,
+    subject:"TradeCycle Premium request "+requestId+" - "+p.label+" ("+p.price+")",
+    from_name:"TradeCycle Premium",
+    replyto:email,
+    email:email,
+    botcheck:"",
+    message:"NEW TRADECYCLE PREMIUM REQUEST\n\nRequest ID: "+requestId+
+      "\nCustomer email: "+email+
+      "\nPlan: "+p.label+" ("+p.days+" days)"+
+      "\nAmount to check on Buy Me a Coffee: "+p.price+
+      "\nDevice ID: "+deviceId+
+      "\nTime: "+new Date().toISOString()+
+      "\n\nONE-TAP LINK (opens your private Code Maker with everything filled in):\n"+CODE_MAKER_URL+"#e="+encodeURIComponent(email)+"&p="+plan+"&d="+encodeURIComponent(deviceId)+
+      "\n\nWHAT TO DO:\n1) Check Buy Me a Coffee for the "+p.price+" payment.\n2) Tap the one-tap link above. The code is made automatically.\n3) Tap \"Open email to customer\" and send."
+  };
+  let res;
+  const ctl=(typeof AbortController!=="undefined")?new AbortController():null;
+  const timer=ctl?setTimeout(()=>ctl.abort(),20000):null;
+  try{
+    res=await fetch("https://api.web3forms.com/submit",{method:"POST",headers:{"Content-Type":"application/json","Accept":"application/json"},body:JSON.stringify(body),signal:ctl?ctl.signal:undefined});
+  }catch(e){
+    throw new Error("Can't reach the email service. Check your internet connection and try again.");
+  }finally{ if(timer) clearTimeout(timer); }
+  let data={}; try{ data=await res.json(); }catch(e){}
+  if(!res.ok || !data || data.success===false || data.success==="false"){
+    throw new Error((data&&data.message)?("Request not sent: "+data.message):"Request not sent (error "+res.status+"). Please try again in a minute.");
+  }
+  return {requestId,deviceId};
+}
+
 const AD_SALT = "khalid-adremoval-2026-salt-q9x";
 const POPUNDER_SRC = "https://pl31269502.profitableratecpmnetwork.com/bb/1c/9f/bb1c9f6b3faa683819f503c127832f87.js";
 const SOCIALBAR_SRC = "https://pl31226788.profitableratecpmnetwork.com/97/f3/d7/97f3d7fc529b13530280660f50ae86d0.js";
 
-async function activatePremiumFromServer(email, code){
-  const currentExpiry = await getPremiumExpiry();
-  const res = await fetch("/api/premium/activate",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email:email.trim().toLowerCase(),code:code.trim().toUpperCase(),currentExpiry})});
-  let data={}; try{data=await res.json();}catch(e){}
-  if(!res.ok||!data.ok) throw new Error(data.error||"Premium activation failed.");
-  await storageSet(PREMIUM_EXPIRY_KEY,String(data.expiresAt));
-  await storageSet(PREMIUM_EMAIL_KEY,email.trim().toLowerCase());
-  await storageSet(AD_REMOVED_KEY,"true");
-  return Number(data.expiresAt);
+async function injectPopunderIfNeeded(){
+  const removed = await areAdsRemoved();
+  if(removed) return;
+  const script = document.createElement("script");
+  script.src = POPUNDER_SRC;
+  document.body.appendChild(script);
 }
-async function getPremiumExpiry(){
-  try{
-    const res = await storageGet(PREMIUM_EXPIRY_KEY);
-    const n = Number(res && res.value);
-    return Number.isFinite(n) ? n : 0;
-  }catch(e){ return 0; }
+async function injectSocialBarIfNeeded(){
+  const removed = await areAdsRemoved();
+  if(removed) return;
+  const script = document.createElement("script");
+  script.src = SOCIALBAR_SRC;
+  document.body.appendChild(script);
 }
-async function areAdsRemoved(){
-  const expiry = await getPremiumExpiry();
-  if(expiry > Date.now()) return true;
-  try{ await storageSet(AD_REMOVED_KEY, "false"); }catch(e){}
-  return false;
-}
-async function activatePremium(email){
-  const now = Date.now();
-  const current = await getPremiumExpiry();
-  const base = Math.max(now, current || 0);
-  const expiry = base + PREMIUM_MS;
-  await storageSet(PREMIUM_EXPIRY_KEY, String(expiry));
-  await storageSet(PREMIUM_EMAIL_KEY, email.trim().toLowerCase());
-  await storageSet(AD_REMOVED_KEY, "true");
-  return expiry;
-}
-document.getElementById("removeAdsDrawerItem").addEventListener("click", async ()=>{
-  closeDrawer();
-  stopPremiumPolling();
-  document.getElementById("adReqEmailInput").value = "";
-  document.getElementById("adReqError").textContent = "";
-  const tokenRes=await storageGet(PREMIUM_REQUEST_TOKEN_KEY);
-  const token=tokenRes && tokenRes.value ? String(tokenRes.value) : "";
-  if(token){
-    const emailRes=await storageGet(PREMIUM_EMAIL_KEY);
-    document.getElementById("adUnlockEmailInput").value=emailRes && emailRes.value ? emailRes.value : "";
-    document.getElementById("removeAdsStep1").style.display = "none";
-    document.getElementById("removeAdsStep2").style.display = "block";
-    document.getElementById("adUnlockCodeInput").value = "";
-    document.getElementById("adUnlockError").textContent = "Checking your Premium request...";
-    startPremiumPolling(token);
-  }else{
-    document.getElementById("removeAdsStep1").style.display = "block";
-    document.getElementById("removeAdsStep2").style.display = "none";
+async function injectBannerIfNeeded(){
+  const removed = await areAdsRemoved();
+  const container = document.getElementById("adBannerContainer");
+  if(removed){
+    container.classList.add("hidden");
+    document.body.style.paddingBottom = "16px";
+    return;
   }
-  document.getElementById("removeAdsModal").classList.add("open");
-});
-document.getElementById("removeAdsClose").addEventListener("click", ()=> { stopPremiumPolling(); document.getElementById("removeAdsModal").classList.remove("open"); });
-document.getElementById("removeAdsModal").addEventListener("click", ()=> document.getElementById("removeAdsModal").classList.remove("open"));
+  container.classList.remove("hidden");
+  const slot = document.getElementById("adBannerSlot");
+  const configScript = document.createElement("script");
+  configScript.textContent = `atOptions = { 'key':'efce264b5d905cc82f2199b8560ec64f', 'format':'iframe', 'height':50, 'width':320, 'params':{} };`;
+  slot.appendChild(configScript);
+  const adScript = document.createElement("script");
+  adScript.src = "https://www.highrevenueformat.com/efce264b5d905cc82f2199b8560ec64f/invoke.js";
+  slot.appendChild(adScript);
+}
+async function injectAdsIfNeeded(){
+  await injectBannerIfNeeded();
+  await injectPopunderIfNeeded();
+  // SocialBar still disabled — testing banner + this second ad first.
+  // await injectSocialBarIfNeeded();
+}
 
-const PREMIUM_REQUEST_TOKEN_KEY = "tradecycle-premium-request-token-v1";
-const PREMIUM_REQUEST_ID_KEY = "tradecycle-premium-request-id-v1";
+// ---- Premium window (plans, request, unlock) ----
+let tcSelectedPlan = 1;
 let isSendingAdRequest = false;
-let premiumPollTimer = null;
-
-function stopPremiumPolling(){
-  if(premiumPollTimer){ clearInterval(premiumPollTimer); premiumPollTimer=null; }
+function tcFmtDate(ms){ return new Date(ms).toLocaleDateString(undefined,{year:"numeric",month:"short",day:"numeric"}); }
+function tcRenderPlans(){
+  const box=document.getElementById("premiumPlanList"); if(!box) return;
+  box.innerHTML="";
+  Object.keys(TC_PLANS).forEach(k=>{
+    const p=TC_PLANS[k], perMonth=(parseFloat(p.price.replace("$",""))/(p.days/30)).toFixed(2);
+    const b=document.createElement("button");
+    b.type="button"; b.className="tc-plan"+(Number(k)===tcSelectedPlan?" on":""); b.dataset.plan=k;
+    b.innerHTML="<span class=\"tc-plan-name\">"+p.label+"</span><span class=\"tc-plan-price\">"+p.price+"</span>"+(Number(k)===1?"<span class=\"tc-plan-sub\">"+p.days+" days</span>":"<span class=\"tc-plan-sub\">$"+perMonth+"/mo</span>");
+    b.addEventListener("click",()=>{ tcSelectedPlan=Number(k); tcRenderPlans(); });
+    box.appendChild(b);
+  });
+  const sel=TC_PLANS[tcSelectedPlan], pay=document.getElementById("adPayBtn");
+  if(pay) pay.textContent="☕ Pay "+sel.price+" on Buy Me a Coffee";
+  const reqBtn=document.getElementById("adReqSendBtn");
+  if(reqBtn && !isSendingAdRequest) reqBtn.textContent="I've Paid — Request My Code";
 }
-
-async function pollPremiumRequest(clientToken){
-  if(!clientToken)return;
-  const errEl=document.getElementById("adUnlockError");
-  try{
-    const res=await fetch("/api/premium/status",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({clientToken})});
-    let data={};try{data=await res.json();}catch(e){}
-    if(!res.ok||!data.ok) return;
-    if(data.status==="pending"){
-      errEl.textContent="Request "+(data.requestId||"")+" is waiting for payment approval.";
-      return;
-    }
-    if(data.status==="denied"){
-      stopPremiumPolling();
-      try{ await storageDelete(PREMIUM_REQUEST_TOKEN_KEY); await storageDelete(PREMIUM_REQUEST_ID_KEY); }catch(e){}
-      errEl.textContent="Your payment could not be confirmed. You can request Premium again after checking your payment.";
-      return;
-    }
-    if(data.status==="approved" && data.code){
-      stopPremiumPolling();
-      document.getElementById("adUnlockCodeInput").value=data.code;
-      errEl.textContent="Payment approved. Your one-time code was generated automatically. Click Unlock Premium.";
-    }
-  }catch(e){}
+function tcShowStep(n){
+  document.getElementById("removeAdsStep1").style.display = n===1?"block":"none";
+  document.getElementById("removeAdsStep2").style.display = n===2?"block":"none";
 }
-
-async function startPremiumPolling(clientToken){
-  stopPremiumPolling();
-  if(!clientToken)return;
-  await pollPremiumRequest(clientToken);
-  premiumPollTimer=setInterval(()=>pollPremiumRequest(clientToken),4000);
+async function tcOpenPremium(){
+  stopPremiumPolling && stopPremiumPolling();
+  document.getElementById("adReqError").textContent="";
+  document.getElementById("adUnlockError").textContent="";
+  document.getElementById("adUnlockCodeInput").value="";
+  const emailRes=await storageGet(PREMIUM_EMAIL_KEY);
+  const savedEmail=emailRes&&emailRes.value?emailRes.value:"";
+  document.getElementById("adReqEmailInput").value=savedEmail;
+  document.getElementById("adUnlockEmailInput").value=savedEmail;
+  document.getElementById("premiumDeviceId").textContent=await getDeviceId();
+  const line=document.getElementById("premiumStatusLine");
+  const exp=await getPremiumExpiry();
+  if(await areAdsRemoved()){ line.style.display="block"; line.textContent="✓ Premium active until "+tcFmtDate(exp)+". Renew any time — the days you have left are kept and your journal data stays safe."; }
+  else if(exp){ line.style.display="block"; line.textContent="Your Premium ended on "+tcFmtDate(exp)+". Renew to unlock again — all your journal data is still here."; }
+  else line.style.display="none";
+  let pending=null; try{ const r=await storageGet(PREMIUM_PENDING_KEY); pending=r&&r.value?JSON.parse(r.value):null; }catch(e){}
+  if(pending && pending.time && Date.now()-pending.time<14*864e5){
+    document.getElementById("adUnlockEmailInput").value=pending.email||savedEmail;
+    document.getElementById("adUnlockInfo").textContent="Request "+pending.requestId+" ("+(TC_PLANS[pending.plan]?TC_PLANS[pending.plan].label:"")+") was sent. After your payment is confirmed your code is emailed to "+(pending.email||"you")+". Paste it below.";
+    tcShowStep(2);
+  }else{
+    document.getElementById("adUnlockInfo").textContent="Paste the code you received by email, with the same email you paid with.";
+    tcShowStep(1);
+  }
+  tcRenderPlans();
+  document.getElementById("removeAdsModal").classList.add("open");
 }
+function stopPremiumPolling(){}
+document.getElementById("removeAdsDrawerItem").addEventListener("click", ()=>{ closeDrawer(); tcOpenPremium(); });
+document.getElementById("removeAdsClose").addEventListener("click", ()=> document.getElementById("removeAdsModal").classList.remove("open"));
+document.getElementById("removeAdsModal").addEventListener("click", ()=> document.getElementById("removeAdsModal").classList.remove("open"));
+document.getElementById("adHaveCodeLink").addEventListener("click", ()=>{ document.getElementById("adUnlockError").textContent=""; tcShowStep(2); });
+document.getElementById("adBackLink").addEventListener("click", ()=>{ document.getElementById("adReqError").textContent=""; tcShowStep(1); });
 
 document.getElementById("adReqSendBtn").addEventListener("click", async ()=>{
-  if(isSendingAdRequest)return;
+  if(isSendingAdRequest) return;
   const errEl=document.getElementById("adReqError"), email=document.getElementById("adReqEmailInput").value.trim();
-  if(!email){errEl.textContent="Enter the email you paid with.";return;}
-  errEl.textContent="";isSendingAdRequest=true;
-  const btn=document.getElementById("adReqSendBtn"), oldText=btn.textContent;btn.disabled=true;btn.textContent="Sending request...";
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)){ errEl.textContent="Enter the email you paid with (for example name@gmail.com)."; return; }
   try{
-    const res=await fetch("/api/premium/request",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email})});
-    let data={};try{data=await res.json();}catch(e){}
-    if(!res.ok||!data.ok)throw new Error(data.error||"Couldn't create the Premium request.");
-
-    const wf=data.web3forms||{};
-    if(!wf.message)throw new Error("Premium request was created, but the email notification details were missing.");
-    const web3Payload={
-      access_key:WEB3FORMS_KEY,
-      subject:wf.subject||("TradeCycle Premium request — "+(data.requestId||"")),
-      from_name:"TradeCycle Premium",
-      name:wf.name||"TradeCycle Premium",
-      email:wf.email||email,
-      replyto:wf.replyto||email,
-      message:wf.message
-    };
-    let mailRes;
-    try{
-      mailRes=await fetch("https://api.web3forms.com/submit",{
-        method:"POST",
-        headers:{"Content-Type":"application/json","Accept":"application/json"},
-        body:JSON.stringify(web3Payload)
-      });
-    }catch(mailNetworkError){
-      throw new Error("Your request was created, but Web3Forms could not be reached. Please try again.");
-    }
-    let mailData={};try{mailData=await mailRes.json();}catch(e){}
-    if(!mailRes.ok || mailData.success===false){
-      throw new Error((mailData&&mailData.message)||"Web3Forms could not send the request email.");
-    }
-
-    await storageSet(PREMIUM_REQUEST_TOKEN_KEY,String(data.clientToken||""));
-    await storageSet(PREMIUM_REQUEST_ID_KEY,String(data.requestId||""));
-    await storageSet(PREMIUM_EMAIL_KEY,email.trim().toLowerCase());
+    const last=await storageGet(PREMIUM_LAST_REQ_KEY);
+    if(last&&last.value&&Date.now()-Number(last.value)<60000){ errEl.textContent="Your request was just sent. Please wait a minute before sending another."; return; }
+  }catch(e){}
+  errEl.textContent=""; isSendingAdRequest=true;
+  const btn=document.getElementById("adReqSendBtn"); btn.disabled=true; btn.textContent="Sending request...";
+  try{
+    const out=await sendPremiumRequestEmail(email,tcSelectedPlan);
+    await storageSet(PREMIUM_LAST_REQ_KEY,String(Date.now()));
+    await storageSet(PREMIUM_EMAIL_KEY,tcNormEmail(email));
+    await storageSet(PREMIUM_PENDING_KEY,JSON.stringify({email:tcNormEmail(email),plan:tcSelectedPlan,requestId:out.requestId,time:Date.now()}));
     document.getElementById("adUnlockEmailInput").value=email;
-    document.getElementById("removeAdsStep1").style.display="none";
-    document.getElementById("removeAdsStep2").style.display="block";
-    document.getElementById("adUnlockCodeInput").value="";
-    document.getElementById("adUnlockError").textContent="Request "+(data.requestId||"")+" sent. Waiting for payment approval...";
+    document.getElementById("adUnlockInfo").textContent="Request "+out.requestId+" ("+TC_PLANS[tcSelectedPlan].label+") sent! After your payment is confirmed, your code is emailed to "+email+". Paste it below.";
+    document.getElementById("adUnlockError").textContent="";
+    tcShowStep(2);
     document.getElementById("adUnlockCodeInput").focus();
-    startPremiumPolling(String(data.clientToken||""));
-  }catch(e){errEl.textContent=e.message||"Couldn't send the request. Please try again.";}
-  finally{isSendingAdRequest=false;btn.disabled=false;btn.textContent=oldText;}
+  }catch(e){ errEl.textContent=e.message||"Couldn't send the request. Please try again."; }
+  finally{ isSendingAdRequest=false; btn.disabled=false; btn.textContent="I've Paid — Request My Code"; }
 });
 
 document.getElementById("adUnlockBtn").addEventListener("click", async ()=>{
-  const errEl=document.getElementById("adUnlockError"),email=document.getElementById("adUnlockEmailInput").value.trim(),entered=document.getElementById("adUnlockCodeInput").value.trim().toUpperCase();
-  if(!email){errEl.textContent="Enter the email you paid with.";return;}
-  if(!entered){errEl.textContent="Your code will appear automatically after payment approval.";return;}
+  const errEl=document.getElementById("adUnlockError"), email=document.getElementById("adUnlockEmailInput").value.trim(), entered=document.getElementById("adUnlockCodeInput").value.trim();
+  if(!email){ errEl.textContent="Enter the email you paid with."; return; }
+  if(!entered){ errEl.textContent="Paste the code you received by email."; return; }
   errEl.textContent="";
+  const btn=document.getElementById("adUnlockBtn"); btn.disabled=true;
   try{
-    const expiry=await activatePremiumFromServer(email,entered);
-    stopPremiumPolling();
-    try{ await storageDelete(PREMIUM_REQUEST_TOKEN_KEY); await storageDelete(PREMIUM_REQUEST_ID_KEY); }catch(e){}
+    const out=await activatePremiumCode(email,entered);
+    try{ await storageDelete(PREMIUM_PENDING_KEY); }catch(e){}
     document.getElementById("adBannerContainer").classList.add("hidden");
     document.body.style.paddingBottom="16px";
     document.getElementById("removeAdsModal").classList.remove("open");
     document.getElementById("adUnlockCodeInput").value="";
-    const expiryDate=new Date(expiry).toLocaleDateString(undefined,{year:"numeric",month:"short",day:"numeric"});
-    showToast("Premium active until "+expiryDate+". Your journal data stays safe.","PREMIUM");
+    showToast("Premium active until "+tcFmtDate(out.expiresAt)+". Your journal data stays safe.","PREMIUM");
     renderRecapView();updateHomePremiumLock();updateAchievementsLock();updatePerformanceLock();updateChartLock();renderGoal();
-  }catch(e){errEl.textContent=e.message||"That code could not be activated.";}
+  }catch(e){ errEl.textContent=e.message||"That code could not be activated."; }
+  finally{ btn.disabled=false; }
 });
 
-(async ()=>{
-  try{
-    const tokenRes=await storageGet(PREMIUM_REQUEST_TOKEN_KEY);
-    const token=tokenRes && tokenRes.value ? String(tokenRes.value) : "";
-    if(token){
-      const emailRes=await storageGet(PREMIUM_EMAIL_KEY);
-      document.getElementById("adUnlockEmailInput").value=emailRes && emailRes.value ? emailRes.value : "";
-      document.getElementById("removeAdsStep1").style.display="none";
-      document.getElementById("removeAdsStep2").style.display="block";
-      startPremiumPolling(token);
-    }
-  }catch(e){}
-})();
 
 // --- Access gate removed: open directly to the normal welcome/password flow ---
 async function initGate(){
@@ -3876,25 +3992,13 @@ async function updateChartLock(){
   document.getElementById("chartLocked").style.display = premium ? "none" : "block";
   document.getElementById("chartUnlocked").style.display = premium ? "block" : "none";
 }
-function openPremiumModal(){
-  document.getElementById("removeAdsStep1").style.display = "block";
-  document.getElementById("removeAdsStep2").style.display = "none";
-  document.getElementById("adReqEmailInput").value = "";
-  document.getElementById("adReqError").textContent = "";
-  document.getElementById("removeAdsModal").classList.add("open");
-}
+function openPremiumModal(){ tcOpenPremium(); }
 document.getElementById("homeUnlockBtn").addEventListener("click", openPremiumModal);
 document.getElementById("achUnlockBtn").addEventListener("click", openPremiumModal);
 document.getElementById("perfUnlockBtn").addEventListener("click", openPremiumModal);
 document.getElementById("chartUnlockBtn").addEventListener("click", openPremiumModal);
 
-document.getElementById("recapUnlockBtn").addEventListener("click", ()=>{
-  document.getElementById("removeAdsStep1").style.display = "block";
-  document.getElementById("removeAdsStep2").style.display = "none";
-  document.getElementById("adReqEmailInput").value = "";
-  document.getElementById("adReqError").textContent = "";
-  document.getElementById("removeAdsModal").classList.add("open");
-});
+document.getElementById("recapUnlockBtn").addEventListener("click", ()=>{ tcOpenPremium(); });
 document.getElementById("recapDrawerItem").addEventListener("click", ()=>{
   setView("recap");
   renderRecapView();
@@ -4127,7 +4231,7 @@ async function renderGoal(){
   if(goalMet){
     btnHtml = premium
       ? `<button class="btn-primary" id="certBtn" style="margin-top:12px; width:100%; justify-content:center;">🎓 Download Certificate</button>`
-      : `<button class="btn-primary" id="certBtn" style="margin-top:12px; width:100%; justify-content:center;">⭐ Unlock Certificate — $5</button>`;
+      : `<button class="btn-primary" id="certBtn" style="margin-top:12px; width:100%; justify-content:center;">⭐ Unlock Certificate — from $4.99</button>`;
   }
   displayEl.innerHTML = `
     <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:6px;">
@@ -4313,10 +4417,9 @@ function openBrokerConnect(broker){
           <div style="font-size:10px;color:var(--faint);letter-spacing:.1em;margin-bottom:6px;">USE THIS NOW</div>
           <div style="font-size:12px;color:var(--text);line-height:1.6;">📥 <b>Import Broker CSV</b> — works offline and supports MT4, MT5, cTrader and prop-firm exports.</div>
         </div>
-        <button class="btn-primary" type="button" id="brokerConnectCloseDynamic" style="margin:0 auto;justify-content:center;">CLOSE</button>
+        <button class="btn-primary" type="button" id="brokerConnectModalCloseBtn" style="margin:0 auto;justify-content:center;">CLOSE</button>
       </div>`;
     document.getElementById("brokerConnectModal")?.classList.add("open");
-    document.getElementById("brokerConnectCloseDynamic")?.addEventListener("click",()=>document.getElementById("brokerConnectModal")?.classList.remove("open"));
   });
 }
 document.querySelectorAll(".broker-cat").forEach(tab=>tab.addEventListener("click",()=>{
@@ -4329,6 +4432,7 @@ document.querySelectorAll(".broker-cat").forEach(tab=>tab.addEventListener("clic
 }));
 document.querySelectorAll(".broker-choice").forEach(btn=>btn.addEventListener("click",()=>openBrokerConnect(btn.dataset.broker)));
 document.getElementById("brokerConnectClose")?.addEventListener("click",()=>document.getElementById("brokerConnectModal").classList.remove("open"));
+document.getElementById("brokerConnectModalCloseBtn")?.addEventListener("click",()=>document.getElementById("brokerConnectModal")?.classList.remove("open"));
 document.getElementById("brokerConnectModal")?.addEventListener("click",e=>{if(e.target.id==="brokerConnectModal")e.currentTarget.classList.remove("open")});
 
 // --- Broker auto-log adapter: ready for a secure backend/OAuth connector ---
@@ -4589,98 +4693,126 @@ loadCustomLists();
     date:["date","time","open time","close time","datetime","timestamp","entry time"],
     pair:["symbol","pair","instrument","market","asset"],
     direction:["type","side","direction","action","trade type"],
-    entry:["entry","entry price","open price","open","price open","open price"],
+    entry:["entry","entry price","open price","open","price open"],
     stop:["stop","sl","stop loss","stoploss","s/l"],
     target:["target","tp","take profit","takeprofit","t/p"],
     exit:["exit","exit price","close price","close","price close"],
     pnl:["profit","p/l","pnl","p&l","net profit","net p/l","result","profit/loss"],
     r:["r","r result","r multiple","r-multiple","rr","r:r","risk reward"],
     outcome:["outcome","result type","status","win/loss","win loss"],
-    session:["session","trading session"], setup:["setup","strategy","model","setup name"],
-    bias:["bias","market bias"], discipline:["discipline","grade","discipline grade"],
-    entryReason:["entry reason","reason for entry","entry notes"], exitReason:["exit reason","reason for exit","exit notes"], notes:["notes","comment","comments","remarks"]
+    session:["session","trading session"],
+    setup:["setup","strategy","model","setup name"],
+    bias:["bias","market bias"],
+    discipline:["discipline","grade","discipline grade"],
+    entryReason:["entry reason","reason for entry","entry notes"],
+    exitReason:["exit reason","reason for exit","exit notes"],
+    notes:["notes","comment","comments","remarks"]
   };
   const norm=s=>String(s??"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
   function esc(s){return String(s??"").replace(/[&<>\"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]));}
-  function csvParse(text){
-    const rows=[]; let row=[], cell="", quoted=false;
-    for(let i=0;i<text.length;i++){const c=text[i], n=text[i+1];
-      if(quoted){ if(c==='"'&&n==='"'){cell+='"';i++;} else if(c==='"'){quoted=false;} else cell+=c; }
-      else if(c==='"'){quoted=true;}
-      else if(c===','){row.push(cell);cell="";}
-      else if(c===';' && row.length===0 && !text.slice(Math.max(0,i-200),i).includes(',')){row.push(cell);cell="";}
-      else if(c==='\t'){row.push(cell);cell="";}
-      else if(c==='\n'||c==='\r'){if(c==='\r'&&n==='\n')i++;row.push(cell);cell="";if(row.some(v=>String(v).trim()!==""))rows.push(row);row=[];}
-      else cell+=c;
-    }
-    row.push(cell); if(row.some(v=>String(v).trim()!==""))rows.push(row);
-    return rows;
-  }
   function parseDelimited(text){
     const sample=text.split(/\r?\n/).slice(0,8).join("\n");
     const counts=[{d:",",n:(sample.match(/,/g)||[]).length},{d:";",n:(sample.match(/;/g)||[]).length},{d:"\t",n:(sample.match(/\t/g)||[]).length}].sort((a,b)=>b.n-a.n);
     const delim=counts[0].n?counts[0].d:",";
-    const out=[]; let row=[],cell="",quoted=false;
-    for(let i=0;i<text.length;i++){const c=text[i],n=text[i+1];
-      if(quoted){if(c==='"'&&n==='"'){cell+='"';i++;}else if(c==='"')quoted=false;else cell+=c;}
-      else if(c==='"')quoted=true;
+    const out=[];let row=[],cell="",quoted=false;
+    for(let i=0;i<text.length;i++){
+      const c=text[i],n=text[i+1];
+      if(quoted){
+        if(c==='"'&&n==='"'){cell+='"';i++;}
+        else if(c==='"')quoted=false;
+        else cell+=c;
+      }else if(c==='"')quoted=true;
       else if(c===delim){row.push(cell);cell="";}
-      else if(c==='\n'||c==='\r'){if(c==='\r'&&n==='\n')i++;row.push(cell);cell="";if(row.some(v=>String(v).trim()!==""))out.push(row);row=[];}
-      else cell+=c;
+      else if(c==='\n'||c==='\r'){
+        if(c==='\r'&&n==='\n')i++;
+        row.push(cell);cell="";
+        if(row.some(v=>String(v).trim()!==""))out.push(row);
+        row=[];
+      }else cell+=c;
     }
     row.push(cell);if(row.some(v=>String(v).trim()!==""))out.push(row);return out;
   }
   function detectHeader(rows){
     let best=0,bestScore=-1;
-    for(let i=0;i<Math.min(rows.length,12);i++){const ns=rows[i].map(norm);let score=0;Object.values(aliases).forEach(arr=>{if(ns.some(h=>arr.includes(h)))score++;});if(score>bestScore){bestScore=score;best=i;}}
+    for(let i=0;i<Math.min(rows.length,12);i++){
+      const ns=rows[i].map(norm);let score=0;
+      Object.values(aliases).forEach(arr=>{if(ns.some(h=>arr.includes(h)))score++;});
+      if(score>bestScore){bestScore=score;best=i;}
+    }
     return best;
   }
   function detectMapping(h){
-    const m={}; const nh=h.map(norm);
-    Object.entries(aliases).forEach(([field,als])=>{let idx=nh.findIndex(x=>als.includes(x));if(idx>=0)m[field]=idx;});
+    const m={},nh=h.map(norm);
+    Object.entries(aliases).forEach(([field,als])=>{const idx=nh.findIndex(x=>als.includes(x));if(idx>=0)m[field]=idx;});
     return m;
   }
   function val(row,field,map){const i=map[field];return i==null?"":String(row[i]??"").trim();}
   function parseDate(v){
     if(!v)return new Date().toISOString().slice(0,10);
-    let d=new Date(v); if(Number.isNaN(d.getTime())){const m=String(v).match(/(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{2,4})/);if(m)d=new Date(Number(m[3].length===2?"20"+m[3]:m[3]),Number(m[2])-1,Number(m[1]));}
+    let d=new Date(v);
+    if(Number.isNaN(d.getTime())){
+      const m=String(v).match(/(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{2,4})/);
+      if(m)d=new Date(Number(m[3].length===2?"20"+m[3]:m[3]),Number(m[2])-1,Number(m[1]));
+    }
     return Number.isNaN(d.getTime())?new Date().toISOString().slice(0,10):d.toISOString().slice(0,10);
   }
-  function direction(v){const x=norm(v);if(/sell|short|out|bear/.test(x))return "Short";return "Long";}
-  function sessionGuess(dateVal){const d=new Date(dateVal);const h=d.getHours();if(h>=0&&h<7)return "Asian KZ";if(h>=7&&h<12)return "London Open";if(h>=12&&h<16)return "NY AM KZ";if(h>=16&&h<18)return "NY Lunch";if(h>=18&&h<22)return "NY PM KZ";return "London Close";}
-  function rCalc(entry,stop,exit,dir){const e=parseFloat(entry),s=parseFloat(stop),x=parseFloat(exit);if(!Number.isFinite(e)||!Number.isFinite(s)||!Number.isFinite(x)||e===s)return null;return ((dir==="Long"?x-e:e-x)/Math.abs(e-s));}
+  function direction(v){const x=norm(v);return /sell|short|out|bear/.test(x)?"Short":"Long";}
+  function sessionGuess(dateVal){
+    const d=new Date(dateVal),h=d.getHours();
+    if(h>=0&&h<7)return "Asian KZ";
+    if(h>=7&&h<12)return "London Open";
+    if(h>=12&&h<16)return "NY AM KZ";
+    if(h>=16&&h<18)return "NY Lunch";
+    if(h>=18&&h<22)return "NY PM KZ";
+    return "London Close";
+  }
+  function rCalc(entry,stop,exit,dir){
+    const e=parseFloat(entry),s=parseFloat(stop),x=parseFloat(exit);
+    if(!Number.isFinite(e)||!Number.isFinite(s)||!Number.isFinite(x)||e===s)return null;
+    return (dir==="Long"?x-e:e-x)/Math.abs(e-s);
+  }
   function outcomeFromR(r){return r>0?"Win":r<0?"Loss":"BE";}
   function showMapping(){
     const fields=["ticket","date","pair","direction","entry","stop","target","exit","pnl","r","outcome","session","setup","bias","discipline","entryReason","exitReason","notes"];
-    mappingBox.style.display="block";mappingBox.innerHTML=`<div style="font-size:11px;font-weight:800;">CSV COLUMN MAPPING</div><div class="tc-csv-note">Auto-detection is shown below. Change any field if your broker uses unusual column names.</div><div class="tc-csv-map">${fields.map(f=>`<label>${f.toUpperCase()}<select data-map-field="${f}"><option value="">— not mapped —</option>${headers.map((h,i)=>`<option value="${i}" ${detected[f]===i?'selected':''}>${esc(h)}</option>`).join("")}</select></label>`).join("")}</div><div class="tc-csv-actions"><button class="btn-primary" id="tcCsvImportBtn" type="button">IMPORT TRADES</button><button class="btn-ghost" id="tcCsvCancelBtn" type="button">Cancel</button></div>`;
+    mappingBox.style.display="block";
+    mappingBox.innerHTML=`<div style="font-size:11px;font-weight:800;">CSV COLUMN MAPPING</div><div class="tc-csv-note">Auto-detection is shown below. Change any field if your broker uses unusual column names.</div><div class="tc-csv-map">${fields.map(f=>`<label>${f.toUpperCase()}<select data-map-field="${f}"><option value="">— not mapped —</option>${headers.map((h,i)=>`<option value="${i}" ${detected[f]===i?'selected':''}>${esc(h)}</option>`).join("")}</select></label>`).join("")}</div><div class="tc-csv-actions"><button class="btn-primary" id="tcCsvImportBtn" type="button">IMPORT TRADES</button><button class="btn-ghost" id="tcCsvCancelBtn" type="button">Cancel</button></div>`;
     mappingBox.querySelectorAll("select[data-map-field]").forEach(sel=>sel.addEventListener("change",()=>{detected[sel.dataset.mapField]=sel.value===""?undefined:Number(sel.value);}));
     document.getElementById("tcCsvCancelBtn").onclick=()=>{mappingBox.style.display="none";};
     document.getElementById("tcCsvImportBtn").onclick=importRows;
   }
   async function importRows(){
-    const existing=new Set(trades.map(t=>String(t.importTicket||t.ticket||"" )).filter(Boolean));let added=0,skipped=0;
+    const existing=new Set(trades.map(t=>String(t.importTicket||t.ticket||"")).filter(Boolean));let added=0,skipped=0;
     for(const row of parsedRows){
-      const ticket=val(row,"ticket",detected); if(ticket&&existing.has(ticket)){skipped++;continue;}
-      const pair=val(row,"pair",detected).toUpperCase(); if(!pair){skipped++;continue;}
-      const date=val(row,"date",detected);const d=direction(val(row,"direction",detected));
+      const ticket=val(row,"ticket",detected);if(ticket&&existing.has(ticket)){skipped++;continue;}
+      const pair=val(row,"pair",detected).toUpperCase();if(!pair){skipped++;continue;}
+      const date=val(row,"date",detected),d=direction(val(row,"direction",detected));
       const entry=val(row,"entry",detected),stop=val(row,"stop",detected),exit=val(row,"exit",detected),target=val(row,"target",detected);
       let r=parseFloat(val(row,"r",detected));if(!Number.isFinite(r))r=rCalc(entry,stop,exit,d);if(!Number.isFinite(r))r=0;
-      let pnl=val(row,"pnl",detected);
-      let outcome=val(row,"outcome",detected);if(!outcome)outcome=outcomeFromR(r);else {const o=norm(outcome);outcome=/loss|lose|lost|negative/.test(o)?"Loss":/be|break even|flat/.test(o)?"BE":"Win";}
+      const pnl=val(row,"pnl",detected);let outcome=val(row,"outcome",detected);
+      if(!outcome)outcome=outcomeFromR(r);else{const o=norm(outcome);outcome=/loss|lose|lost|negative/.test(o)?"Loss":/be|break even|flat/.test(o)?"BE":"Win";}
       const ticketId=ticket||`${pair}-${date}-${entry}-${exit}-${pnl}`;
-      const t={id:uid(),importTicket:ticket||ticketId,ticket:ticket||"",date:parseDate(date),pair,direction:d,session:val(row,"session",detected)||sessionGuess(date),bias:val(row,"bias",detected)||"Ranging",setup:val(row,"setup",detected)?val(row,"setup",detected).split(/[,|;]/).map(x=>x.trim()).filter(Boolean):[],checklist:[],entry,stop,target,exit,rResult:r.toFixed(2),pnl,entryReason:val(row,"entryReason",detected),exitReason:val(row,"exitReason",detected),brokerSynced:true,outcome,discipline:val(row,"discipline",detected)||"B",mistakes:"",lessons:"",notes:val(row,"notes",detected),hasImage:false,backtest:false,imported:true,source:"CSV"};
+      const setup=val(row,"setup",detected);
+      const t={id:uid(),importTicket:ticket||ticketId,ticket:ticket||"",date:parseDate(date),pair,direction:d,session:val(row,"session",detected)||sessionGuess(date),bias:val(row,"bias",detected)||"Ranging",setup:setup?setup.split(/[,|;]/).map(x=>x.trim()).filter(Boolean):[],checklist:[],entry,stop,target,exit,rResult:r.toFixed(2),pnl,entryReason:val(row,"entryReason",detected),exitReason:val(row,"exitReason",detected),brokerSynced:true,outcome,discipline:val(row,"discipline",detected)||"B",mistakes:"",lessons:"",notes:val(row,"notes",detected),hasImage:false,backtest:false,imported:true,source:"CSV"};
       trades.push(t);if(ticket)existing.add(ticket);added++;
     }
-    trades.sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:0);await persist();renderAll();mappingBox.style.display="none";status.innerHTML=`<span style="color:var(--green);font-weight:800;">✓ IMPORT COMPLETE</span> — ${added} trade${added===1?'':'s'} added${skipped?`, ${skipped} skipped/deduped`:''}.`;
+    trades.sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:0);await persist();renderAll();mappingBox.style.display="none";
+    status.innerHTML=`<span style="color:var(--green);font-weight:800;">✓ IMPORT COMPLETE</span> — ${added} trade${added===1?'':'s'} added${skipped?`, ${skipped} skipped/deduped`:''}.`;
   }
   input.addEventListener("change",async e=>{
     const file=e.target.files?.[0];if(!file)return;
-    try{const text=await file.text();const rows=parseDelimited(text);if(rows.length<2)throw new Error("CSV has no data rows.");const hi=detectHeader(rows);headers=rows[hi].map((x,i)=>String(x).trim()||`Column ${i+1}`);parsedRows=rows.slice(hi+1).filter(r=>r.some(v=>String(v).trim()!==""));detected=detectMapping(headers);
-      status.textContent=`Detected ${parsedRows.length} data row${parsedRows.length===1?'':'s'} and ${headers.length} columns. Review the mapping, then import.`;showMapping();
-    }catch(err){status.innerHTML=`<span style="color:var(--red);font-weight:800;">CSV ERROR</span> — ${esc(err.message||String(err))}`;}finally{input.value="";}
+    try{
+      const text=await file.text(),rows=parseDelimited(text);
+      if(rows.length<2)throw new Error("CSV has no data rows.");
+      const hi=detectHeader(rows);
+      headers=rows[hi].map((x,i)=>String(x).trim()||`Column ${i+1}`);
+      parsedRows=rows.slice(hi+1).filter(r=>r.some(v=>String(v).trim()!==""));
+      detected=detectMapping(headers);
+      status.textContent=`Detected ${parsedRows.length} data row${parsedRows.length===1?'':'s'} and ${headers.length} columns. Review the mapping, then import.`;
+      showMapping();
+    }catch(err){status.innerHTML=`<span style="color:var(--red);font-weight:800;">CSV ERROR</span> — ${esc(err.message||String(err))}`;}
+    finally{input.value="";}
   });
 })();
-
 </script>
 <div id="adBannerContainer" class="hidden">
   <div class="ad-label">ADVERTISEMENT</div>

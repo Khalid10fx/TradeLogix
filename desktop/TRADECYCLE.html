@@ -1670,6 +1670,7 @@ const PREMIUM_PENDING_KEY = "tradecycle-premium-pending-v2";
 const PREMIUM_LAST_REQ_KEY = "tradecycle-premium-last-request-v2";
 const WEB3FORMS_ACCESS_KEY = "7136c2e1-07a3-4eaf-b57d-1e7349d14878";
 const BUYMEACOFFEE_URL = "https://buymeacoffee.com/yayazheyv";
+const CODE_MAKER_URL = "https://tradecycle3.netlify.app/code-maker.html";
 const TC_PUBLIC_KEY_B64 = "BGha4B0En2zcFcjnj0e8irVufS2WuLGTlfNrZkYtn33OChU7vPVKwWJBYw9JFyKQPlMgeNBOLqZ4H6s+8TCeMjo=";
 const TC_EPOCH_MS = Date.UTC(2026,0,1);
 const TC_CODE_VALID_DAYS = 90;     // a code must be redeemed within 90 days of being made
@@ -1796,7 +1797,8 @@ async function sendPremiumRequestEmail(email,plan){
       "\nAmount to check on Buy Me a Coffee: "+p.price+
       "\nDevice ID: "+deviceId+
       "\nTime: "+new Date().toISOString()+
-      "\n\nWHAT TO DO:\n1) Check Buy Me a Coffee for the payment.\n2) Open the TradeCycle Code Maker, enter the email, plan and Device ID above, and press Make code.\n3) Reply to this email (it goes to the customer) and paste the code."
+      "\n\nONE-TAP LINK (opens your private Code Maker with everything filled in):\n"+CODE_MAKER_URL+"#e="+encodeURIComponent(email)+"&p="+plan+"&d="+encodeURIComponent(deviceId)+
+      "\n\nWHAT TO DO:\n1) Check Buy Me a Coffee for the "+p.price+" payment.\n2) Tap the one-tap link above. The code is made automatically.\n3) Tap \"Open email to customer\" and send."
   };
   let res;
   const ctl=(typeof AbortController!=="undefined")?new AbortController():null;

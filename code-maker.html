@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow"><title>TradeCycle Code Maker (PRIVATE)</title>
+<style>
+:root{--bg:#0A0C10;--panel:#11151C;--panel2:#161B24;--border:#2C3444;--text:#E7E9EC;--muted:#7C8798;--amber:#F0A939;--green:#3ECF8E;--red:#F0576A}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:ui-monospace,Menlo,Consolas,monospace;padding:16px}
+.w{max-width:640px;margin:0 auto}h1{font-size:18px;margin:4px 0 4px;color:var(--amber)}p{font-size:12px;color:var(--muted);line-height:1.6;margin:6px 0}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:14px;margin:12px 0}
+label{display:block;font-size:11px;color:var(--muted);margin:10px 0 4px}
+input,select,textarea{width:100%;background:var(--panel2);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:10px;font:inherit;font-size:13px}
+textarea{resize:vertical}button{background:var(--amber);color:#111;border:0;border-radius:10px;padding:12px 14px;font:inherit;font-weight:800;font-size:13px;cursor:pointer;width:100%;margin-top:10px}
+button.g{background:var(--panel2);color:var(--text);border:1px solid var(--border)}.err{color:var(--red);font-size:12px;margin-top:8px;min-height:16px}.ok{color:var(--green)}
+.warn{border-color:var(--red);color:var(--red);font-size:12px;line-height:1.6}
+</style></head><body><div class="w">
+<h1>TradeCycle Code Maker</h1>
+<p>PRIVATE tool for the owner. Do not publish it, and never share your private key file. Everything runs on this device; nothing is uploaded.</p>
+
+<div class="card" id="keyCard">
+  <b style="font-size:13px">1. Your private key</b>
+  <p>Load <b>ADMIN-PRIVATE-KEY.json</b> (once). Tick the box to remember it on this device only.</p>
+  <input type="file" id="keyFile" accept=".json,application/json">
+  <label>or paste the key text</label>
+  <textarea id="keyText" rows="2" placeholder='{"kty":"EC",...}'></textarea>
+  <label style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="remember" style="width:auto"> Remember on this device</label>
+  <button class="g" id="keySave" type="button">Use this key</button>
+  <div class="err" id="keyMsg"></div>
+</div>
+
+<div class="card">
+  <b style="font-size:13px">2. Customer request</b>
+  <label>Paste the whole request email here (optional, fills the boxes below)</label>
+  <textarea id="paste" rows="4" placeholder="NEW TRADECYCLE PREMIUM REQUEST ..."></textarea>
+  <label>Customer email</label><input id="email" type="email" placeholder="name@gmail.com" autocomplete="off">
+  <label>Plan</label><select id="plan"></select>
+  <label>Device ID (from the request email; leave empty to make a code that works on any device)</label>
+  <input id="dev" placeholder="ABCD-1234" autocomplete="off" autocapitalize="characters">
+  <button id="make" type="button">Make code</button>
+  <div class="err" id="msg"></div>
+</div>
+
+<div class="card" id="outCard" style="display:none">
+  <b style="font-size:13px">3. Send this code to the customer</b>
+  <p>First check the payment on Buy Me a Coffee. The code works once, only for this email<span id="devnote"></span>, and must be used within 90 days.</p>
+  <textarea id="out" rows="6" readonly style="word-break:break-all"></textarea>
+  <button id="copy" type="button">Copy code</button>
+  <a id="mail" style="text-decoration:none"><button class="g" type="button">Open email to customer</button></a>
+</div>
+</div>
+<script>
+const TC_EPOCH_MS = Date.UTC(2026,0,1);
+const TC_CODE_VALID_DAYS = 90;     // a code must be redeemed within 90 days of being made
+const TC_PLANS = {                 // days = how long Premium lasts. Change prices here (and in the Code Maker if you like).
+  1:  {label:"1 Month",  days:30,  price:"$4.99"},
+  3:  {label:"3 Months", days:90,  price:"$12.99"},
+  6:  {label:"6 Months", days:180, price:"$24.99"},
+  12: {label:"1 Year",   days:365, price:"$44.99"}
+};
+const TC_B32 = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
+function tcB32Enc(bytes){
+  let bits=0,val=0,out="";
+  for(const b of bytes){ val=(val<<8)|b; bits+=8; while(bits>=5){ out+=TC_B32[(val>>>(bits-5))&31]; bits-=5; } val&=0xFFFF; }
+  if(bits>0) out+=TC_B32[(val<<(5-bits))&31];
+  return out;
+}
+function tcB32Dec(str){
+  let bits=0,val=0; const out=[];
+  for(const ch of str){
+    const i=TC_B32.indexOf(ch); if(i<0) return null;
+    val=((val<<5)|i)&0xFFFFFF; bits+=5;
+    if(bits>=8){ out.push((val>>>(bits-8))&255); bits-=8; }
+  }
+  return new Uint8Array(out);
+}
+function tcNormEmail(e){ return String(e||"").trim().toLowerCase(); }
+function tcNormDeviceId(d){ return String(d||"").toUpperCase().replace(/[^0-9A-Z]/g,"").replace(/O/g,"0").replace(/[IL]/g,"1"); }
+async function tcHash4(text){
+  const buf=await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
+  return new Uint8Array(buf).slice(0,4);
+}
+function tcSame4(a,b){ for(let i=0;i<4;i++) if(a[i]!==b[i]) return false; return true; }
+async function tcEmailHash(email){ return tcHash4("tc-email-v1:"+tcNormEmail(email)); }
+async function tcDeviceHash(id){ return tcHash4("tc-device-v1:"+tcNormDeviceId(id)); }
+// signing side (used by the Code Maker page); must stay byte-compatible with core.js
+async function tcMakeCode(privJwk,email,plan,deviceId){
+  const eh=await tcEmailHash(email);
+  const dh=deviceId&&tcNormDeviceId(deviceId)?await tcDeviceHash(deviceId):new Uint8Array(4);
+  const day=Math.floor((Date.now()-TC_EPOCH_MS)/864e5);
+  const payload=new Uint8Array(16);
+  payload[0]=1; payload[1]=plan; payload[2]=(day>>8)&255; payload[3]=day&255;
+  crypto.getRandomValues(payload.subarray(4,8));
+  payload.set(eh,8); payload.set(dh,12);
+  const key=await crypto.subtle.importKey("jwk",privJwk,{name:"ECDSA",namedCurve:"P-256"},false,["sign"]);
+  const sig=new Uint8Array(await crypto.subtle.sign({name:"ECDSA",hash:"SHA-256"},key,payload));
+  const all=new Uint8Array(80); all.set(payload,0); all.set(sig,16);
+  const s=tcB32Enc(all);
+  return "TC1-"+s.match(/.{1,8}/g).join("-");
+}
+
+const $=id=>document.getElementById(id);
+const KEYSTORE="tradecycle-codemaker-key-v1";
+let priv=null;
+Object.keys(TC_PLANS).forEach(k=>{const o=document.createElement("option");o.value=k;o.textContent=TC_PLANS[k].label+" - "+TC_PLANS[k].price+" ("+TC_PLANS[k].days+" days)";$("plan").appendChild(o);});
+function setKey(text,remember){
+  try{
+    const j=JSON.parse(text); if(!j||j.kty!=="EC"||!j.d) throw new Error("x");
+    priv=j; if(remember){try{localStorage.setItem(KEYSTORE,JSON.stringify(j));}catch(e){}}
+    $("keyMsg").className="err ok"; $("keyMsg").textContent="Key loaded. You can make codes now."; $("keyCard").style.opacity=".7"; if(hashMode&&$("email").value) setTimeout(()=>$("make").click(),0);
+  }catch(e){ priv=null; $("keyMsg").className="err"; $("keyMsg").textContent="That is not a valid private key file."; }
+}
+function applyHash(){
+  const h=new URLSearchParams(location.hash.replace(/^#/,"")), e=h.get("e"), pl=h.get("p"), d=h.get("d");
+  if(e) $("email").value=e; if(pl&&TC_PLANS[pl]) $("plan").value=pl; if(d) $("dev").value=d;
+  return !!(e&&pl&&TC_PLANS[pl]);
+}
+const hashMode=applyHash();
+try{const s=localStorage.getItem(KEYSTORE); if(s) setKey(s,false);}catch(e){}
+if(hashMode){ $("msg").className="err ok"; $("msg").textContent=priv?"Request loaded from the email link. Making the code...":"Request loaded. Load your private key (step 1) once and the code is made automatically."; }
+$("keyFile").addEventListener("change",async e=>{const f=e.target.files[0]; if(f) setKey(await f.text(),$("remember").checked);});
+$("keySave").addEventListener("click",()=>setKey($("keyText").value,$("remember").checked));
+$("paste").addEventListener("input",()=>{
+  const t=$("paste").value, m=(re)=>{const r=t.match(re);return r?r[1].trim():""};
+  const e=m(/Customer email:\s*(\S+)/i), d=m(/Device ID:\s*([0-9A-Za-z\-]+)/i), p=m(/Plan:\s*([^\n(]+)/i);
+  if(e)$("email").value=e; if(d)$("dev").value=d;
+  if(p){for(const k of Object.keys(TC_PLANS)) if(TC_PLANS[k].label.toLowerCase()===p.toLowerCase()) $("plan").value=k;}
+});
+$("make").addEventListener("click",async()=>{
+  $("msg").textContent=""; $("outCard").style.display="none";
+  if(!priv){$("msg").textContent="Load your private key first (step 1).";return;}
+  const email=$("email").value.trim();
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)){$("msg").textContent="Enter the customer's email.";return;}
+  const dev=$("dev").value.trim();
+  if(dev && tcNormDeviceId(dev).length!==8){$("msg").textContent="Device ID must look like ABCD-1234 (8 characters), or leave it empty.";return;}
+  try{
+    const plan=Number($("plan").value), code=await tcMakeCode(priv,email,plan,dev);
+    $("out").value=code; $("devnote").textContent=dev?" and this device":" (any device)";
+    const p=TC_PLANS[plan], body="Hi,\n\nThanks for your payment! Here is your TradeCycle Premium code ("+p.label+"):\n\n"+code+"\n\nIn the app: Menu > Get Premium > I already have a code. Enter this email ("+email+") and paste the code.\nThe code works once and must be used within 90 days.\n\nEnjoy TradeCycle!";
+    $("mail").href="mailto:"+encodeURIComponent(email)+"?subject="+encodeURIComponent("Your TradeCycle Premium code")+"&body="+encodeURIComponent(body);
+    $("outCard").style.display="block";
+  }catch(e){$("msg").textContent="Could not make the code: "+(e&&e.message||e);}
+});
+$("copy").addEventListener("click",async()=>{try{await navigator.clipboard.writeText($("out").value);$("copy").textContent="Copied!";}catch(e){$("out").select();document.execCommand("copy");$("copy").textContent="Copied!";}setTimeout(()=>$("copy").textContent="Copy code",1500);});
+</script></body></html>

@@ -23,3 +23,8 @@ d) Paste the code in the app > Unlock Premium. Try the same code again: it must 
 Do this on the website, the APK, and the Windows app.
 
 KEEP SECRET: ADMIN-PRIVATE-KEY.json (never upload it to GitHub or send it to anyone).
+
+ONE-TAP CODES (new)
+Each request email now has a "ONE-TAP LINK". Tap it (phone or PC): the Code Maker opens with the email, plan and device filled in and makes the code by itself.
+First time only: on that device load ADMIN-PRIVATE-KEY.json once and tick "Remember on this device". Then tap "Open email to customer" and send.
+The Code Maker page is public but useless without your private key file. The key file must stay secret.
